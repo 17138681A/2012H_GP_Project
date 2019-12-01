@@ -1,33 +1,35 @@
 <RCC>
-    <qresource prefix="/image">
-        <file>jewel.jpg</file>
-        <file>bullet.png</file>
-        <file>energy_ball.png</file>
-        <file>code0.png</file>
-        <file>enemyBlack1.png</file>
-        <file>guide.png</file>
-        <file>darkPurple.png</file>
-        <file>laserRed03.png</file>
-        <file>flakker.png</file>
-        <file>frenzy.png</file>
-        <file>frenzyx0.png</file>
-        <file>frenzyx1.png</file>
-        <file>frenzyx2.png</file>
-        <file>frenzyx3.png</file>
-        <file>hp07.png</file>
-        <file>hp06.png</file>
-        <file>hp05.png</file>
-        <file>hp04.png</file>
-        <file>hp03.png</file>
-        <file>hp02.png</file>
-        <file>hp01.png</file>
-        <file>healthpack.png</file>
-        <file>laserBlue05.png</file>
-        <file>meteorBrown_big1.png</file>
-        <file>meteorBrown_big2.png</file>
-        <file>meteorBrown_big3.png</file>
-        <file>meteorBrown_big4.png</file>
-        <file>ultra_flakker.png</file>
-        <file>playerShip1_red.png</file>
+    <qresource prefix="/">
+        
+        <file>image/bullet.png</file>
+        <file>image/code0.png</file>
+        <file>image/darkPurple.png</file>
+        <file>image/enemyBlack1.png</file>
+        <file>image/energy_ball.jpg</file>
+        <file>image/energy_ball.png</file>
+        <file>image/flakker.png</file>
+        <file>image/frenzy.png</file>
+        <file>image/frenzyx0.png</file>
+        <file>image/frenzyx1.png</file>
+        <file>image/frenzyx2.png</file>
+        <file>image/frenzyx3.png</file>
+        <file>image/guide.png</file>
+        <file>image/healthpack.png</file>
+        <file>image/hp01.png</file>
+        <file>image/hp02.png</file>
+        <file>image/hp03.png</file>
+        <file>image/hp04.png</file>
+        <file>image/hp05.png</file>
+        <file>image/hp06.png</file>
+        <file>image/hp07.png</file>
+        <file>image/jewel.jpg</file>
+        <file>image/laserBlue05.png</file>
+        <file>image/laserRed03.png</file>
+        <file>image/meteorBrown_big1.png</file>
+        <file>image/meteorBrown_big2.png</file>
+        <file>image/meteorBrown_big3.png</file>
+        <file>image/meteorBrown_big4.png</file>
+        <file>image/playerShip1_red.png</file>
+        <file>image/ultra_flakker.png</file>
     </qresource>
 </RCC>
