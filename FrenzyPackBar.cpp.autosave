@@ -1,0 +1,11 @@
+#include "FrenzyPackBar.h"
+
+FrenzyPackBar::FrenzyPackBar(double x, double y, QObject* parent){
+
+
+    pix = QPixmap(":/image/frenzyx0.png");
+    setPixmap(pix);
+    setScale(0.8);
+    setPos(60, 900);
+
+}

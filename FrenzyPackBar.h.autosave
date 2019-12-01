@@ -1,0 +1,14 @@
+#ifndef FRENZYPACKBAR_H
+#define FRENZYPACKBAR_H
+#include <QGraphicsPixmapItem>
+
+class FrenzyPackBar: public QGraphicsPixmapItem{
+
+public:
+    FrenzyPackBar(double x, double y, QObject* parent);
+
+private:
+    QPixmap pix;
+};
+
+#endif // FRENZYPACKBAR_H

@@ -1,0 +1,17 @@
+#ifndef HEALTHSLOT_H
+#define HEALTHSLOT_H
+#include "Equiment.h"
+
+class HealthSlot: public Equipment{
+
+    Q_OBJECT
+
+public:
+
+    HealthSlot(QTimer* timer, QObject* parent);
+
+
+
+};
+
+#endif // HEALTHSLOT_H
