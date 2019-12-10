@@ -20,7 +20,7 @@ protected:
     int randVer;
     int randHor;
     int health;
-    int dropRate;
+    double dropRate;
 
 //    int tilt;
 //    int randMovePeriod;
@@ -30,8 +30,8 @@ protected:
     QPixmap pix;
 
 signals:
-    void enemyIsEliminated(double x, double y, int dropRate);
-    void enemyProjectileIsLaunched(double x, double y);
+    void spawnEquipmentSignal(double x, double y, double dropRate);
+    void enemyProjectileIsLaunched(double degree, double x, double y);
 
 
 

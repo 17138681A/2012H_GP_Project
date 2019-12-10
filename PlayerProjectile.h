@@ -4,7 +4,6 @@
 
 
 #include "MovableObj.h"
-#include "enumList.h"
 #include "QTimer"
 #include "QtMath"
 
@@ -15,15 +14,12 @@ class PlayerProjectile: public Movable, public QGraphicsPixmapItem {
 
 public:
 
-    explicit PlayerProjectile( Tilt t, double x, double y, QTimer* timer, QObject* parent);
-
+    explicit PlayerProjectile( double degree, double x, double y, QTimer* timer, QObject* parent);
 
     double getProjectileSpeed() const;
 
 //    int getFireRate() const;
 //    void setFireRate(int fr);
-
-
 //    double getDx() const;
 //    double getDy() const;
 //    void setDx(double x);
@@ -33,17 +29,16 @@ public:
 
 protected:
 
-//    int fireRate;
     int damage;
+    double projectileDegree;
 
     QPixmap pix;
-    Tilt tilt;
 
-    const double slightlyTiltDegreeOfX = qSin(qDegreesToRadians(22.5));
-    const double slightlyTiltDegreeOfY = qCos(qDegreesToRadians(22.5));
-    const double extremelyTiltDegreeOfX = qSin(qDegreesToRadians(45.0));
-    const double extremelyTiltDegreeOfY = qCos(qDegreesToRadians(45.0));
-
+//    int fireRate;
+//    const double slightlyTiltDegreeOfX = qSin(qDegreesToRadians(22.5));
+//    const double slightlyTiltDegreeOfY = qCos(qDegreesToRadians(22.5));
+//    const double extremelyTiltDegreeOfX = qSin(qDegreesToRadians(45.0));
+//    const double extremelyTiltDegreeOfY = qCos(qDegreesToRadians(45.0));
 //    const double projectileSpeed = 10;
 
 public slots:

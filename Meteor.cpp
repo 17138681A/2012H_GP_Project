@@ -33,11 +33,10 @@ Meteor::Meteor(QTimer* timer, QObject* parent):Enemy(timer, parent){
 
 void Meteor::move(){
 
-    setRotation(rotationDegree);
+    setRotation(++rotationDegree);
     //set before delete
-    setPos(x(), y()+step);
+    setY(y()+step);
 
-    ++rotationDegree;
 
     if(y() - pixmap().height()*scale() >= 960)
         delete this;

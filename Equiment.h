@@ -19,8 +19,8 @@ protected:
 
     EquipmentName name;
     int randNum;
-    int xBounceDirection;
-    int yBounceDirection;
+    int randDirOfX;
+    int randDirOfY;
     QPixmap pix;
     QTimer* refreshRate;
 

@@ -23,11 +23,12 @@ SOURCES += \
     Game.cpp \
     Guide.cpp \
     HealthBar.cpp \
+    HorrorDisk.cpp \
     Jet.cpp \
     Meteor.cpp \
     MovableObj.cpp \
     PlayerProjectile.cpp \
-    Projectile.cpp \
+    Satellite.cpp \
     Spider.cpp \
     main.cpp \
     mainwindow.cpp
@@ -40,11 +41,12 @@ HEADERS += \
     Game.h \
     Guide.h \
     HealthBar.h \
+    HorrorDisk.h \
     Jet.h \
     Meteor.h \
     MovableObj.h \
     PlayerProjectile.h \
-    Projectile.h \
+    Satellite.h \
     Spider.h \
     enumList.h \
     mainwindow.h

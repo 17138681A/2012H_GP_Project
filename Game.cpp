@@ -18,27 +18,26 @@ Game::Game(QObject* parent)
     setScene(scene);
 
     refreshRate = new QTimer(this);
-    frenzy = new QTimer(this);
+    frenzyTimer = new QTimer(this);
     enemySpawningTimer = new QTimer(this);
 
     weapon = PLASMA_BEAM;
     numOfFrenzyPack = 0;
     stormerEffectStack = 0;
-
     killCount = 0;
+    numOfSpiderSpawned = 0;
 
     jet = new Jet(0, 0, refreshRate, this);
     jet->setPos(640-jet->pixmap().width()*jet->scale()/2,960);
     scene->addItem(jet);
 
-
-
-
     guide = new Guide(640, 350, this);
-
     scene->addItem(guide);
 
+    srand((unsigned)time(0));
 
+    random_device dev;
+    mt19937 rng(dev());
 
     refreshRate->start(10);
     connect(refreshRate, SIGNAL(timeout()), this, SLOT(opening()));
@@ -80,7 +79,7 @@ void Game::playerControlAvailable()
 
 
     enemySpawningTimer->start(2000);
-    connect(frenzy, SIGNAL(timeout()), this, SLOT(fire()));
+    connect(frenzyTimer, SIGNAL(timeout()), this, SLOT(fire()));
     connect(refreshRate, SIGNAL(timeout()), this, SLOT(screenEventHandler()));
     connect(enemySpawningTimer, SIGNAL(timeout()), this, SLOT(spawnEnemy()));
 
@@ -139,33 +138,42 @@ void Game::addEquipment(EquipmentName name, double x, double y){
 }
 
 
-void Game::spawnEquipment(double x, double y, int dropRate){
 
-    if(dropRate == -1)//Don't drop any item if the eliminated enemy has -1 for their drop rate
+//Randomly spawn 1 among 5 equipments
+void Game::spawnEquipment(double x, double y, double dropRate){
+
+
+    if(dropRate < 0)//Don't drop any item if the eliminated enemy has -1 for their drop rate
         return;
 
-    ++killCount;
+    if(dropRate < 1)
+        ++killCount;
 
 
-    int randNum = rand()%(dropRate);//Randomly spawn 1 among 5 equipments
+    unsigned int upperBound = (unsigned int)(21/dropRate); //Find the upperbound of the random distribution's range according to the drop rate
 
-    if(randNum == 0){
+
+    uniform_int_distribution<std::mt19937::result_type> dist(1, upperBound); //Distribution in the range [1, upperBound]
+
+    unsigned int randNum = dist(rng); //Generate a number in the range [1, upperBound]
+    cout << "upperBound: " << randNum << endl;
+    if(randNum == 1){
 
         addEquipment(ULTRA_STORMER_PACK, x, y);
 
-    }else if(randNum == 1){
+    }else if(randNum <= 6){
 
         addEquipment(STORMER_PACK, x, y);
 
-    }else if(randNum == 2){
+    }else if(randNum <= 11){
 
         addEquipment(FRENZY_PACK, x ,y);
 
-    }else if(randNum == 3){
+    }else if(randNum <= 16){
 
         addEquipment(HEALTH_PACK, x, y);
 
-    }else if(randNum == 4){
+    }else if(randNum <= 21){
 
         addEquipment(FRENZY_PACK, x, y);//Spawn FRENZY_PACK instead of SPEED_BOOST_PACK because SPEED_BOOST_PACK is still under development
 
@@ -173,10 +181,10 @@ void Game::spawnEquipment(double x, double y, int dropRate){
 
 }
 
-void Game::spawnEnemyPeojectile(double x, double y)
+void Game::spawnEnemyPeojectile(double degree, double x, double y)
 {
 
-    enemyProjectile = new EnemyProjectile(x, y, refreshRate, this);
+    enemyProjectile = new EnemyProjectile(degree, x, y, refreshRate, this);
     scene->addItem(enemyProjectile);
 
 }
@@ -184,7 +192,7 @@ void Game::spawnEnemyPeojectile(double x, double y)
 void Game::addMeteor(){
 
     enemy = new Meteor(refreshRate, this);
-    connect(enemy, SIGNAL(enemyIsEliminated(double, double, int)), this, SLOT(spawnEquipment(double, double, int)));
+    connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(spawnEquipment(double, double, double)));
     scene->addItem(enemy);
 
 }
@@ -192,26 +200,69 @@ void Game::addMeteor(){
 void Game::addSpider(){
 
     enemy = new Spider(refreshRate, this);
-    connect(enemy, SIGNAL(enemyIsEliminated(double, double, int)), this, SLOT(spawnEquipment(double, double, int)));
-    connect(enemy, SIGNAL(enemyProjectileIsLaunched(double, double)), this, SLOT(spawnEnemyPeojectile(double, double)));
+    connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(spawnEquipment(double, double, double)));
+    connect(enemy, SIGNAL(enemyProjectileIsLaunched(double, double, double)), this, SLOT(spawnEnemyPeojectile(double, double, double)));
     scene->addItem(enemy);
 
 }
 
+void Game::addSatellite(){
+    enemy = new Satellite(refreshRate, this);
+    connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(spawnEquipment(double, double, double)));
+    scene->addItem(enemy);
+}
+
+void Game::spawnBoss(){
+
+    enemy = new HorrorDisk(refreshRate, this);
+    connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(spawnEquipment(double, double, double)));
+    connect(enemy, SIGNAL(enemyProjectileIsLaunched(double, double, double)), this, SLOT(spawnEnemyPeojectile(double, double, double)));
+    scene->addItem(enemy);
+
+}
 
 void Game::spawnEnemy(){
 
+//    if(killCount == numOfSpiderSpawned){
 
+//        QTimer::singleShot(3000, this, SLOT(spawnBoss()));
+
+//    }
+
+
+
+    if(killCount < 40){
+
+        for(int i = 0; i < 1 + killCount/15; ++i){
+
+            addSpider();
+            ++numOfSpiderSpawned;
+
+        }
+
+    }else if(killCount == numOfSpiderSpawned){
+
+                QTimer::singleShot(3000, this, SLOT(spawnBoss()));
+                numOfSpiderSpawned = 0;
+
+            }
+
+
+    uniform_int_distribution<std::mt19937::result_type> dist(1, 5); //Distribution in the range [1, 5]
+    unsigned int randNum = dist(rng); //Generate a number in the range [1, 5]
+
+    if(randNum == 1)//20% chance to spawn a satellite when spawning new enemies
+        addSatellite();
 
     for(int i = 0; i < rand()%3; ++i)
         addMeteor();
 
-    cout << "spawned" << endl;
-
-    for(int i = 0; i < 1+killCount/20; ++i)
-        addSpider();
 
 
+
+
+    cout << "killed: "<< killCount << endl;
+    cout << "enemySpawned: " << numOfSpiderSpawned << endl;
 
 //    enemy = new Spider(refreshRate, this);
 //    scene->addItem(enemy);
@@ -220,9 +271,9 @@ void Game::spawnEnemy(){
 
 }
 
-void Game::addPlayerProjectile(Tilt tilt){
+void Game::addPlayerProjectile(double degree){
 
-    projectile = new PlayerProjectile(tilt, jet->x()+(jet->pixmap().width())*jet->scale()/2, jet->y(), refreshRate, this);
+    projectile = new PlayerProjectile(degree, jet->x()+(jet->pixmap().width())*jet->scale()/2, jet->y(), refreshRate, this);
     scene->addItem(projectile);
 
 
@@ -230,32 +281,23 @@ void Game::addPlayerProjectile(Tilt tilt){
 
 void Game::firePlasmaBeam(){
 
-    addPlayerProjectile(NoTilt);
+    addPlayerProjectile(0);
 
 }
 
 void Game::fireFlakkerBeam(){
 
-    addPlayerProjectile(NoTilt);
+    for(int i = 0; i < 3; ++i)
+        addPlayerProjectile(337.5+22.5*i);
 
-    addPlayerProjectile(SlightlyTiltLeft);
-
-    addPlayerProjectile(SlightlyTiltRight);
 
 
 }
 
 void Game::fireUltraFlakkerBeam(){
 
-    addPlayerProjectile(NoTilt);
-
-    addPlayerProjectile(SlightlyTiltLeft);
-
-    addPlayerProjectile(SlightlyTiltRight);
-
-    addPlayerProjectile(ExtremelyTiltLeft);
-
-    addPlayerProjectile(ExtremelyTiltRight);
+    for(int i = 0; i < 5; ++i)
+        addPlayerProjectile((315+22.5*i));
 
 }
 
@@ -290,7 +332,7 @@ void Game::stopStormerEffect(){
 
 void Game::stopFrenzyEffect(){
 
-    frenzy->stop();
+    frenzyTimer->stop();
     frenzyMode = false;
 }
 
@@ -313,8 +355,8 @@ void Game::keyPressEvent(QKeyEvent *event)
                 fire();
 
 
-            cout << "pressing" << endl;
-            cout << frenzy->isActive() << endl;
+//            cout << "Newpressing" << endl;
+//            cout << frenzyTimer->isActive() << endl;
 
 
         }
@@ -338,7 +380,7 @@ void Game::keyPressEvent(QKeyEvent *event)
             QTimer::singleShot(5000, this, SLOT(stopFrenzyEffect()));
             frenzyMode = true;
             --numOfFrenzyPack;
-            frenzy->start(50);
+            frenzyTimer->start(100);
 
         }
     }
@@ -369,7 +411,7 @@ void Game::keyReleaseEvent(QKeyEvent *event)
 void Game::pause(){
 
     refreshRate->stop();
-    frenzy->stop();
+    frenzyTimer->stop();
     enemySpawningTimer->stop();
 }
 

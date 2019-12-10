@@ -5,11 +5,12 @@
 
 
 
-PlayerProjectile::PlayerProjectile( Tilt t, double x, double y, QTimer* timer, QObject *parent)
+PlayerProjectile::PlayerProjectile( double degree, double x, double y, QTimer* timer, QObject *parent)
 {
     pix = QPixmap(":/image/laserRed03.png");
-    tilt = t;
+
     damage = 20;
+    projectileDegree = degree;
     setPixmap(pix);
 
 //    setDx(dx);
@@ -48,41 +49,39 @@ void PlayerProjectile::move(){
             }
         }
 
-    if(tilt == SlightlyTiltRight){
-
-
-        setRotation(22.5);
-        setY(y()-step*slightlyTiltDegreeOfY);
-        setX(x()+step*slightlyTiltDegreeOfX);
-
-    }else if(tilt == SlightlyTiltLeft){
-
-        setRotation(-22.5);
-        setY(y()-step*slightlyTiltDegreeOfY);
-        setX(x()-step*slightlyTiltDegreeOfX);
-
-    }else if(tilt == ExtremelyTiltRight){
-
-        setRotation(45);
-        setY(y()-step*extremelyTiltDegreeOfY);
-        setX(x()+step*extremelyTiltDegreeOfX);
-
-    }else if(tilt == ExtremelyTiltLeft){
-
-        setRotation(-45);
-        setY(y()-step*extremelyTiltDegreeOfY);
-        setX(x()-step*extremelyTiltDegreeOfX);
-
-    }else if(tilt == NoTilt)
-            setY(y()-step);
-
-
-
+    setRotation(projectileDegree);
+    setY(y()-step*qCos(qDegreesToRadians(projectileDegree)));
+    setX(x()+step*qSin(qDegreesToRadians(projectileDegree)));
 
     if(y() + pixmap().height()*scale() < 0)
         delete this;
 
 }
+
+//        setRotation(22.5);
+//        setY(y()-step*slightlyTiltDegreeOfY);
+//        setX(x()+step*slightlyTiltDegreeOfX);
+
+//    }else if(tilt == SlightlyTiltLeft){
+
+//        setRotation(-22.5);
+//        setY(y()-step*slightlyTiltDegreeOfY);
+//        setX(x()-step*slightlyTiltDegreeOfX);
+
+//    }else if(tilt == ExtremelyTiltRight){
+
+//        setRotation(45);
+//        setY(y()-step*extremelyTiltDegreeOfY);
+//        setX(x()+step*extremelyTiltDegreeOfX);
+
+//    }else if(tilt == ExtremelyTiltLeft){
+
+//        setRotation(-45);
+//        setY(y()-step*extremelyTiltDegreeOfY);
+//        setX(x()-step*extremelyTiltDegreeOfX);
+
+//    }else if(tilt == NoTilt)
+//            setY(y()-step);
 
 //void PlayerProjectile::setFireRate(int fr){
 

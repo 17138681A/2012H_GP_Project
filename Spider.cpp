@@ -2,10 +2,12 @@
 
 Spider::Spider(QTimer* timer, QObject* parent):Enemy(timer, parent){
 
-    randHor = 100 + rand()%900;
+
+
+    randHor = 100 + rand()%1080;
     randVer = 50 + rand()%300;
     health = 50;
-    dropRate = 20;
+    dropRate = 0.05;// 21% item droprate
 
     pix = QPixmap(":/image/enemyBlack1.png");
 
@@ -25,7 +27,7 @@ void Spider::emitEnemyProjectileIsLaunchedSignal()
     int randNum = rand()%200;
 
     if(randNum == 1)
-        emit enemyProjectileIsLaunched(x()+pixmap().width()/4, y());
+        emit enemyProjectileIsLaunched(0, x()+pixmap().width()/4, y());
 
 }
 

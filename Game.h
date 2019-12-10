@@ -10,6 +10,8 @@
 #include "HealthBar.h"
 #include "Equiment.h"
 #include "Meteor.h"
+#include "Satellite.h"
+#include "HorrorDisk.h"
 #include "EnemyProjectile.h"
 #include "enumList.h"
 #include <QMainWindow>
@@ -21,6 +23,10 @@
 #include "QtMath"
 #include "QList"
 #include "QRandomGenerator"
+#include "random"
+#include "iostream"
+
+using namespace std;
 
 class Game: public QGraphicsView{
 
@@ -40,8 +46,9 @@ public slots:
     void screenEventHandler();
     void playerControlAvailable();
     void spawnEnemy();
-    void spawnEquipment(double x, double y, int dropRate);
-    void spawnEnemyPeojectile(double x, double y);
+    void spawnBoss();
+    void spawnEquipment(double x, double y, double dropRate);
+    void spawnEnemyPeojectile(double degree, double x, double y);
     void addEquipmentEffect(EquipmentName);/// Day 5
     void stopStormerEffect();
     void opening();
@@ -68,10 +75,11 @@ private:
 
     //4 async event
     QTimer* refreshRate;
-    QTimer* frenzy;
+    QTimer* frenzyTimer;
     QTimer* enemySpawningTimer;
     QTimer* openingTimer;
 
+    mt19937 rng;
 
 //    int fps;
 //    int fireRate;
@@ -83,6 +91,7 @@ private:
     int numOfFrenzyPack;
     int stormerEffectStack;
     int killCount;
+    int numOfSpiderSpawned;
 
     bool goingUp = false;
     bool goingDown = false;
@@ -95,10 +104,11 @@ private:
     void keyPressEvent(QKeyEvent* event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
 
-    void addPlayerProjectile(Tilt tilt);
+    void addPlayerProjectile(double degree);
     void addEquipment(EquipmentName name, double x, double y);
     void addSpider();
     void addMeteor();
+    void addSatellite();
 
     void firePlasmaBeam();
     void fireFlakkerBeam();
@@ -107,6 +117,7 @@ private:
     void pause();
     //    void paintEvent(QPaintEvent* event) override;
     //    void timerEvent(QTimerEvent* event) override;
+
 
 };
 

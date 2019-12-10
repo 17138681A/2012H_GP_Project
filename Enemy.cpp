@@ -22,7 +22,7 @@ void Enemy::deductHealth(int hp){
 
     health -= hp;
     if(health <= 0){
-        emit enemyIsEliminated(x(), y(), dropRate);
+        emit spawnEquipmentSignal(x(), y(), dropRate);
         delete this;
     }
 

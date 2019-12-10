@@ -5,27 +5,28 @@
 Equipment::Equipment(EquipmentName equipment, double x, double y, QTimer* timer, QObject* parent)
 {
 
-    randNum = rand()%4;
+//    randNum = rand()%4;
     name = equipment;
     refreshRate = timer;
+    randDirOfX = -1 + 2*(rand()%2);
+    randDirOfY = -1 + 2*(rand()%2);
 
+//    if(randNum == 0){
+//        randDirOfX = 1;
+//        randDirOfY = 1;
 
-    if(randNum == 0){
-        xBounceDirection = 1;
-        yBounceDirection = 1;
+//    }else if(randNum == 1){
+//        randDirOfX = 1;
+//        randDirOfY = -1;
 
-    }else if(randNum == 1){
-        xBounceDirection = 1;
-        yBounceDirection = -1;
+//    }else if(randNum == 2){
+//        randDirOfX = -1;
+//        randDirOfY = 1;
 
-    }else if(randNum == 2){
-        xBounceDirection = -1;
-        yBounceDirection = 1;
-
-    }else if(randNum == 3){
-        xBounceDirection = -1;
-        yBounceDirection = -1;
-    }
+//    }else if(randNum == 3){
+//        randDirOfX = -1;
+//        randDirOfY = -1;
+//    }
 
 
     if(name == STORMER_PACK)
@@ -70,18 +71,18 @@ void Equipment::move()
 
 
     if(y() <= 0)
-        yBounceDirection = 1;
+        randDirOfY = 1;
 
     if(x() <= 0)
-        xBounceDirection = 1;
+        randDirOfX = 1;
 
     if(y() >= 960 - pixmap().height()*scale())
-        yBounceDirection = -1;
+        randDirOfY = -1;
 
     if(x() >= 1280 - pixmap().width()*scale())
-        xBounceDirection = -1;
+        randDirOfX = -1;
 
-    setPos(x()+step*xBounceDirection, y()+step*yBounceDirection);
+    setPos(x()+step*randDirOfX, y()+step*randDirOfY);
 
 
 }

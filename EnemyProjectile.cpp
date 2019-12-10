@@ -1,12 +1,13 @@
 #include "EnemyProjectile.h"
 #include "Jet.h"
 
-EnemyProjectile::EnemyProjectile(double x, double y, QTimer* timer, QObject* parent){
+EnemyProjectile::EnemyProjectile(double degree, double x, double y, QTimer* timer, QObject* parent){
 
 //    health = 1;
 //    dropRate = -1; //Projectile won't drop any item
     damage = 50;
     pix = QPixmap(":/image/laserBlue05.png");
+    projectileDegree = degree;
 
     setPixmap(pix);
     setStep(5);
@@ -34,10 +35,12 @@ void EnemyProjectile::move()
             }
         }//Day 5
 
+    setRotation(projectileDegree);
+    setY(y()+step*qCos(qDegreesToRadians(projectileDegree)));
+    setX(x()-step*qSin(qDegreesToRadians(projectileDegree)));
+
     if(y() - pixmap().height()*scale() >= 960)
         delete this;
-
-    setY(y()+step);
 
 
 }

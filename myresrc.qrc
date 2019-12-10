@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        
         <file>image/bullet.png</file>
         <file>image/code0.png</file>
         <file>image/darkPurple.png</file>
@@ -31,5 +30,7 @@
         <file>image/meteorBrown_big4.png</file>
         <file>image/playerShip1_red.png</file>
         <file>image/ultra_flakker.png</file>
+        <file>image/ufoBlue.png</file>
+        <file>image/spaceStation_022.png</file>
     </qresource>
 </RCC>
