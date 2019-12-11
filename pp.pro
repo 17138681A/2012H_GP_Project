@@ -26,6 +26,7 @@ SOURCES += \
     HorrorDisk.cpp \
     Jet.cpp \
     Meteor.cpp \
+    MotherDisk.cpp \
     MovableObj.cpp \
     PlayerProjectile.cpp \
     Satellite.cpp \
@@ -44,6 +45,7 @@ HEADERS += \
     HorrorDisk.h \
     Jet.h \
     Meteor.h \
+    MotherDisk.h \
     MovableObj.h \
     PlayerProjectile.h \
     Satellite.h \

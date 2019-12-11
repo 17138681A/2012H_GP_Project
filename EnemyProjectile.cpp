@@ -39,8 +39,10 @@ void EnemyProjectile::move()
     setY(y()+step*qCos(qDegreesToRadians(projectileDegree)));
     setX(x()-step*qSin(qDegreesToRadians(projectileDegree)));
 
-    if(y() - pixmap().height()*scale() >= 960)
+    if(y() >= 960 || x() >= 1280 || x()+pixmap().height()*scale() <= 0 || y()+pixmap().height()*scale() <= 0){
         delete this;
+        cout << "deleted" << endl;
+    }
 
 
 }

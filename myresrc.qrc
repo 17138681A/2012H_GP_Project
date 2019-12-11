@@ -32,5 +32,8 @@
         <file>image/ultra_flakker.png</file>
         <file>image/ufoBlue.png</file>
         <file>image/spaceStation_022.png</file>
+        <file>image/ufoRed.png</file>
+        <file>image/ufoYellow.png</file>
+        <file>image/star_gold.png</file>
     </qresource>
 </RCC>

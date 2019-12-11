@@ -15,7 +15,8 @@ enum EquipmentName{
     ULTRA_STORMER_PACK,
     SPEEDBOOST_PACK,
     FRENZY_PACK,
-    HEALTH_PACK
+    HEALTH_PACK,
+    FRENZY_STAR
 
 
 };//Day 5

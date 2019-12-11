@@ -63,6 +63,7 @@ Game::Game(QObject* parent)
 
 
 
+
 void Game::opening(){
 
     if(jet->y() <= 600){
@@ -74,6 +75,20 @@ void Game::opening(){
     }
 }
 
+void Game::victory(){
+
+    pause();
+    gameOver = true;
+
+}
+
+void Game::pause(){
+
+    refreshRate->stop();
+    frenzyTimer->stop();
+    enemySpawningTimer->stop();
+}
+
 void Game::playerControlAvailable()
 {
 
@@ -82,6 +97,8 @@ void Game::playerControlAvailable()
     connect(frenzyTimer, SIGNAL(timeout()), this, SLOT(fire()));
     connect(refreshRate, SIGNAL(timeout()), this, SLOT(screenEventHandler()));
     connect(enemySpawningTimer, SIGNAL(timeout()), this, SLOT(spawnEnemy()));
+
+
 
 
     jet->setStep(5);
@@ -120,12 +137,11 @@ void Game::addEquipmentEffect(EquipmentName name){
     else if(name == HEALTH_PACK && jet->getHealth() < maxHealthOfJet)
         jet->addHealth(100);
 
-    else if(name == SPEEDBOOST_PACK)//Still developing
-        jet->setStep(10);
-
     else if(name == FRENZY_PACK && numOfFrenzyPack < maxNumOfFrenzyPack)
         ++numOfFrenzyPack;
 
+    else if(name == FRENZY_STAR)//Still developing
+        victory();
 
 }// Day 5
 
@@ -148,6 +164,21 @@ void Game::spawnEquipment(double x, double y, double dropRate){
 
     if(dropRate < 1)
         ++killCount;
+
+    if(dropRate > 1){
+
+        if(dropRate > 21){
+
+            cout << "spawned" << endl;
+
+            addEquipment(FRENZY_STAR, x, y);
+            return;
+
+        }else QTimer::singleShot(4000, this, SLOT(spawnMotherDisk()));
+
+    }
+
+
 
 
     unsigned int upperBound = (unsigned int)(21/dropRate); //Find the upperbound of the random distribution's range according to the drop rate
@@ -212,9 +243,18 @@ void Game::addSatellite(){
     scene->addItem(enemy);
 }
 
-void Game::spawnBoss(){
+void Game::spawnHorrorDisk(){
 
     enemy = new HorrorDisk(refreshRate, this);
+    connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(spawnEquipment(double, double, double)));
+    connect(enemy, SIGNAL(enemyProjectileIsLaunched(double, double, double)), this, SLOT(spawnEnemyPeojectile(double, double, double)));
+    scene->addItem(enemy);
+
+}
+
+void Game::spawnMotherDisk(){
+
+    enemy = new MotherDisk(refreshRate, this);
     connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(spawnEquipment(double, double, double)));
     connect(enemy, SIGNAL(enemyProjectileIsLaunched(double, double, double)), this, SLOT(spawnEnemyPeojectile(double, double, double)));
     scene->addItem(enemy);
@@ -231,7 +271,7 @@ void Game::spawnEnemy(){
 
 
 
-    if(killCount < 40){
+    if(killCount < 35){
 
         for(int i = 0; i < 1 + killCount/15; ++i){
 
@@ -242,7 +282,7 @@ void Game::spawnEnemy(){
 
     }else if(killCount == numOfSpiderSpawned){
 
-                QTimer::singleShot(3000, this, SLOT(spawnBoss()));
+                QTimer::singleShot(2000, this, SLOT(spawnHorrorDisk()));
                 numOfSpiderSpawned = 0;
 
             }
@@ -408,12 +448,6 @@ void Game::keyReleaseEvent(QKeyEvent *event)
 ///    }
 }
 
-void Game::pause(){
-
-    refreshRate->stop();
-    frenzyTimer->stop();
-    enemySpawningTimer->stop();
-}
 
 void Game::screenEventHandler()
 {

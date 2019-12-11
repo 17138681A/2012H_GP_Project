@@ -16,8 +16,8 @@ Q_OBJECT
 
 public:
 
-    int getStep() const;
-    void setStep(int s);
+    double getStep() const;
+    void setStep(double s);
     virtual ~Movable() {}
 
 
@@ -36,7 +36,7 @@ public:
 
 protected:
 
-    int step;//Movement speed
+    double step;//Movement speed
 
 //    double ptX;
 //    double ptY;

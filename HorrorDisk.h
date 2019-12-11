@@ -2,8 +2,8 @@
 #define HORRORDISK_H
 
 #include "Enemy.h"
-#include "QTimer"
-#include "QObject"
+
+
 
 class HorrorDisk: public Enemy{
 
@@ -17,16 +17,23 @@ public slots:
     void emitEnemyProjectileIsLaunchedSignal();
     void move() override;
     void startBursting();
-    void stopBursting();
+//    void stopShooting();
 
 private:
 
     int rotationDegree;
     int randDirOfX;
     int randDirOfY;
-    bool isArriving;
+    int attackPeriod;
+    int attackCounter;
+    int numOfBurst;
 
-    QTimer* attackTimer;
+    bool isArriving;
+    bool isRaging;
+//    bool bursting;
+
+//    QTimer* attackTimer;
+    QTimer* burstTimer;
 
 };
 

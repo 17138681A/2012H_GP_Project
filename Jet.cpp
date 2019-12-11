@@ -46,8 +46,8 @@ void Jet::deductHealth(int hp){
 void Jet::addHealth(int hp)
 {
     health += hp;
-    if(health >= 500)
-        health = 500;
+    if(health >= 300)
+        health = 300;
 
 }
 

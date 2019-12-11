@@ -12,6 +12,7 @@
 #include "Meteor.h"
 #include "Satellite.h"
 #include "HorrorDisk.h"
+#include "MotherDisk.h"
 #include "EnemyProjectile.h"
 #include "enumList.h"
 #include <QMainWindow>
@@ -46,12 +47,14 @@ public slots:
     void screenEventHandler();
     void playerControlAvailable();
     void spawnEnemy();
-    void spawnBoss();
+    void spawnHorrorDisk();
+    void spawnMotherDisk();
     void spawnEquipment(double x, double y, double dropRate);
     void spawnEnemyPeojectile(double degree, double x, double y);
     void addEquipmentEffect(EquipmentName);/// Day 5
     void stopStormerEffect();
     void opening();
+
 
 
 
@@ -119,6 +122,7 @@ private:
     //    void timerEvent(QTimerEvent* event) override;
 
 
+    void victory();
 };
 
 #endif // GAME_H

@@ -41,11 +41,17 @@ Equipment::Equipment(EquipmentName equipment, double x, double y, QTimer* timer,
     else if(name == FRENZY_PACK)
         pix = QPixmap(":/image/frenzy.png");
 
+    else if(name == FRENZY_STAR)
+        pix = QPixmap(":/image/star_gold.png");
+
 
     setPixmap(pix);
     setStep(1);
     setPos(x,y);
-    setScale(0.1);
+    if(name == FRENZY_STAR)
+        setScale(2);
+    else
+        setScale(0.1);
 
 
     connect(refreshRate, SIGNAL(timeout()), this, SLOT(move()));

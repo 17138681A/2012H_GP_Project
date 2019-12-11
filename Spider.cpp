@@ -27,7 +27,7 @@ void Spider::emitEnemyProjectileIsLaunchedSignal()
     int randNum = rand()%200;
 
     if(randNum == 1)
-        emit enemyProjectileIsLaunched(0, x()+pixmap().width()/4, y());
+        emit enemyProjectileIsLaunched(0, x()+pixmap().width()*scale()/2, y());
 
 }
 

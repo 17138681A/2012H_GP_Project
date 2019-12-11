@@ -36,11 +36,11 @@
 //    return objWidth;
 //}
 
-void Movable::setStep(int s){
+void Movable::setStep(double s){
     step = s;
 }
 
-int Movable::getStep()const{
+double Movable::getStep()const{
     return step;
 }
 
