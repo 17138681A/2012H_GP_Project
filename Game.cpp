@@ -9,398 +9,313 @@ Game::Game(QObject* parent)
     setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
     setFocusPolicy(Qt::NoFocus);
 
-
-
     scene = new QGraphicsScene(this);
-    scene->setSceneRect(0,0, 1280, 960);
-
-
+    scene->setSceneRect(0, 0, 1280, 960); //Fixed window size: 1280x960
     setScene(scene);
 
-    refreshRate = new QTimer(this);
+    refreshTimer = new QTimer(this);
     frenzyTimer = new QTimer(this);
     enemySpawningTimer = new QTimer(this);
 
-    weapon = PLASMA_BEAM;
+    weapon = DEFAULT_BEAM;
     numOfFrenzyPack = 0;
-    stormerEffectStack = 0;
-    killCount = 0;
-    numOfSpiderSpawned = 0;
+    sprayEffectStack = 0;
+    numOfDestroyedMosquito = 0;
+    numOfSpawnedMosquito = 0;
 
-    jet = new Jet(0, 0, refreshRate, this);
+    goingUp = false;
+    goingDown = false;
+    goingLeft = false;
+    goingRight = false;
+    firing = false;
+    frenzyMode = false;
+    gameOver = false;
+    bossFight = false;
+
+    srand((unsigned)time(0)); //Set seed for random number
+
+    random_device dev;
+    mt19937 rng(dev()); //Using random number generator for a fair draw of equipment
+
+    createOpening();
+
+
+}
+
+//Create the opening scene of the game
+void Game::createOpening(){
+
+    //Jet is entering the game and moving forward
+    jet = new Jet(0, 0, refreshTimer, this);
     jet->setPos(640-jet->pixmap().width()*jet->scale()/2,960);
     scene->addItem(jet);
 
-    guide = new Guide(640, 350, this);
+    //An image showing the control keys
+    guide = new Guide(640, 300, this);
     scene->addItem(guide);
 
-    srand((unsigned)time(0));
+    refreshTimer->start(10); //Refresh the scene 100 times every 1 second
+    connect(refreshTimer, SIGNAL(timeout()), this, SLOT(checkJetPosition())); //Check position of jet during the opening of the game
 
-    random_device dev;
-    mt19937 rng(dev());
-
-    refreshRate->start(10);
-    connect(refreshRate, SIGNAL(timeout()), this, SLOT(opening()));
-
-
-    //    setBackgroundBrush(QImage(":/images/darkPurple.png"));
-    //    equipment = new Equipment(500, 500, refreshRate, this);
-    //    scene->addItem(equipment);
-//    initialAnimationTimer = startTimer(10);
-//    guide->setPos(640-guide->pixmap().width()*guide->scale()/2,300-guide->pixmap().height()*guide->scale()/2);
-
-
-
-//    fps = startTimer(10);
-
-//    fireRate = -1;
-
-
-//    gunslinger->setOffset(gunslinger->getX(), gunslinger->getY());
-//    QGraphicsPixmapItem* item = new QGraphicsPixmapItem(QPixmap::fromImage(img));
-//    QImage img(":/image/jewel.jpg");
 }
 
 
+//Check position of jet during the opening of the game
+void Game::checkJetPosition(){
 
-
-void Game::opening(){
-
+    //Stop the opening when jet is reaching a certain postition
     if(jet->y() <= 600){
 
-         playerControlAvailable();
-         disconnect(refreshRate, SIGNAL(timeout()), this, SLOT(opening()));
-         disconnect(refreshRate, SIGNAL(timeout()), jet, SLOT(move()));
+         disconnect(refreshTimer, SIGNAL(timeout()), this, SLOT(checkJetPosition()));
+
+         jet->arrived();
+
+         setCombatEnvironment();
 
     }
 }
 
-void Game::victory(){
 
-    pause();
-    gameOver = true;
-
-}
-
-void Game::pause(){
-
-    refreshRate->stop();
-    frenzyTimer->stop();
-    enemySpawningTimer->stop();
-}
-
-void Game::playerControlAvailable()
+//Set up event handler and display bar
+void Game::setCombatEnvironment()
 {
 
+    enemySpawningTimer->start(2000); //Spawn new wave of enemy every 2 seconds
 
-    enemySpawningTimer->start(2000);
+    //Attach the timer to the corresponding event handler
     connect(frenzyTimer, SIGNAL(timeout()), this, SLOT(fire()));
-    connect(refreshRate, SIGNAL(timeout()), this, SLOT(screenEventHandler()));
-    connect(enemySpawningTimer, SIGNAL(timeout()), this, SLOT(spawnEnemy()));
+    connect(refreshTimer, SIGNAL(timeout()), this, SLOT(screenEventHandler()));
+    connect(enemySpawningTimer, SIGNAL(timeout()), this, SLOT(spawnEnemyWave()));
+//    spawnMotherDisk();
 
+    delete guide; //Remove guide at the opening
 
-
-
-    jet->setStep(5);
-
-
-    delete guide;
-
+    //Set up display bar of possessing frenzy pack
     frenzyPackDisplayBar = new FrenzyPackDisplayBar(this);
     scene->addItem(frenzyPackDisplayBar);
 
+    //Set up health bar
     healthBar = new HealthBar(this);
     scene->addItem(healthBar);
 
-    setFocus();
-
-    //    jet->setptX(jet->x());
-    //    jet->setptY(jet->y());
-    //    killTimer(initialAnimationTimer);
-    //    refreshRate->start(10);
-}
-
-void Game::addEquipmentEffect(EquipmentName name){
-
-    if(name == STORMER_PACK){
-        weapon = STORMER_BEAM;
-        ++stormerEffectStack;
-        QTimer::singleShot(10000, this, SLOT(stopStormerEffect()));
-    }
-
-    else if(name == ULTRA_STORMER_PACK){
-        weapon = ULTRA_STORMER_BEAM;
-        ++stormerEffectStack;
-        QTimer::singleShot(10000, this, SLOT(stopStormerEffect()));
-    }
-
-    else if(name == HEALTH_PACK && jet->getHealth() < maxHealthOfJet)
-        jet->addHealth(100);
-
-    else if(name == FRENZY_PACK && numOfFrenzyPack < maxNumOfFrenzyPack)
-        ++numOfFrenzyPack;
-
-    else if(name == FRENZY_STAR)//Still developing
-        victory();
-
-}// Day 5
-
-void Game::addEquipment(EquipmentName name, double x, double y){
-
-    equipment = new Equipment(name, x, y, refreshRate, this);//equipment 1
-    scene->addItem(equipment);
-    connect(equipment, SIGNAL(equipped(EquipmentName)), this, SLOT(addEquipmentEffect(EquipmentName)));
+    setFocus(); //Start handling keyboard input from player
 
 }
 
+void Game::spawnEnemyWave(){
+
+    //Player need to elminate 40 mosquitos in order to proceed to the mini boss fight
+    if(numOfSpawnedMosquito < 40){
+
+        //Spawn 2 mosquitos in each following wave after 20 mosquitos were spawned
+        for(int i = 0; i < 1 + numOfSpawnedMosquito/20; ++i){
+
+            spawnMosquito();
+            ++numOfSpawnedMosquito;
+
+        }
+
+        if(numOfSpawnedMosquito%7 == 0)
+            spawnBeetle();
+
+    }else if(numOfDestroyedMosquito == numOfSpawnedMosquito){
+
+                QTimer::singleShot(2000, this, SLOT(spawnHorrorDisk()));
+                numOfDestroyedMosquito = 0; //Clear the record as all mosquitos are eliminated
+
+            }
+
+    uniform_int_distribution<std::mt19937::result_type> dist(1, 6); //Distribution in the range [1, 5]
+    unsigned int randNum = dist(rng); //Generate a random number in the range [1, 5]
+
+    if(randNum == 1) //16.667% chance to spawn a satellite in each wave
+        spawnSatellite();
+
+    if(!bossFight)
+    for(int i = 0; i < rand()%3; ++i) //Randomly spawn 0 to 2 meteor in each wave
+        spawnMeteor();
+
+}
 
 
-//Randomly spawn 1 among 5 equipments
-void Game::spawnEquipment(double x, double y, double dropRate){
+void Game::spawnMeteor(){
+
+    enemy = new Meteor(refreshTimer, this);
+    connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(drawEquipment(double, double, double)));
+    scene->addItem(enemy);
+
+}
 
 
-    if(dropRate < 0)//Don't drop any item if the eliminated enemy has -1 for their drop rate
+void Game::spawnSatellite(){
+
+    enemy = new Satellite(refreshTimer, this);
+    connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(drawEquipment(double, double, double)));
+    scene->addItem(enemy);
+
+}
+
+
+void Game::spawnMosquito(){
+
+    enemy = new Mosquito(refreshTimer, this);
+    connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(drawEquipment(double, double, double)));
+    connect(enemy, SIGNAL(spawnEnemyProjectileSignal(double, double, double)), this, SLOT(spawnEnemyPeojectile(double, double, double)));
+    scene->addItem(enemy);
+
+}
+
+
+void Game::spawnBeetle(){
+
+    enemy = new Beetle(refreshTimer, this);
+    connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(drawEquipment(double, double, double)));
+    connect(enemy, SIGNAL(spawnEnemyProjectileSignal(double, double, double)), this, SLOT(spawnEnemyPeojectile(double, double, double)));
+    scene->addItem(enemy);
+
+}
+
+
+void Game::spawnHorrorDisk(){
+
+    enemy = new HorrorDisk(refreshTimer, this);
+    connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(drawEquipment(double, double, double)));
+    connect(enemy, SIGNAL(spawnEnemyProjectileSignal(double, double, double)), this, SLOT(spawnEnemyPeojectile(double, double, double)));
+    scene->addItem(enemy);
+
+}
+
+
+void Game::spawnMotherDisk(){
+
+    enemy = new MotherDisk(refreshTimer, this);
+    connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(drawEquipment(double, double, double)));
+    connect(enemy, SIGNAL(spawnEnemyProjectileSignal(double, double, double)), this, SLOT(spawnEnemyPeojectile(double, double, double)));
+    scene->addItem(enemy);
+
+}
+
+//Spawn enemy projectile at the current position of the enemy
+void Game::spawnEnemyPeojectile(double degree, double x, double y)
+{
+
+    enemyProjectile = new EnemyProjectile(degree, x, y, refreshTimer, this);
+    scene->addItem(enemyProjectile);
+
+}
+
+
+//Randomly draw 1 among 5 equipments
+void Game::drawEquipment(double x, double y, double dropRate){
+
+    if(dropRate == 0) //Don't spawn equipment if the drop rate is zero
         return;
 
-    if(dropRate < 1)
-        ++killCount;
+    if(dropRate == 0.05) //Mosquito is defeated
+        ++numOfDestroyedMosquito;
 
-    if(dropRate > 1){
+    if(dropRate == 20){ //Horro disk is defeated
 
-        if(dropRate > 21){
-
-            cout << "spawned" << endl;
-
-            addEquipment(FRENZY_STAR, x, y);
-            return;
-
-        }else QTimer::singleShot(4000, this, SLOT(spawnMotherDisk()));
+        QTimer::singleShot(4000, this, SLOT(spawnMotherDisk()));
+        bossFight = true;
 
     }
 
+    if(dropRate == 999){ //Mother disk is defeated
 
+        spawnEquipment(FRENZY_STAR, x, y); //Spawn victory item
+        return;
 
+    }
 
-    unsigned int upperBound = (unsigned int)(21/dropRate); //Find the upperbound of the random distribution's range according to the drop rate
+    unsigned int upperBound = (unsigned int)(20/dropRate); //Find the upperbound of the distribution according to the drop rate
 
 
     uniform_int_distribution<std::mt19937::result_type> dist(1, upperBound); //Distribution in the range [1, upperBound]
 
     unsigned int randNum = dist(rng); //Generate a number in the range [1, upperBound]
-    cout << "upperBound: " << randNum << endl;
+
+    // Drop rate(scale with dropRate from each enemy):
+    // Frenzy Pack - 45%
+    // Health Pack - 25%
+    // Spray Pack - 25%
+    // Ultra Spray Pack - 5%
     if(randNum == 1){
 
-        addEquipment(ULTRA_STORMER_PACK, x, y);
+        spawnEquipment(ULTRA_SPRAY_PACK, x, y);
 
     }else if(randNum <= 6){
 
-        addEquipment(STORMER_PACK, x, y);
+        spawnEquipment(SPRAY_PACK, x, y);
 
     }else if(randNum <= 11){
 
-        addEquipment(FRENZY_PACK, x ,y);
+        spawnEquipment(HEALTH_PACK, x ,y);
 
-    }else if(randNum <= 16){
+    }else if(randNum <= 20){
 
-        addEquipment(HEALTH_PACK, x, y);
-
-    }else if(randNum <= 21){
-
-        addEquipment(FRENZY_PACK, x, y);//Spawn FRENZY_PACK instead of SPEED_BOOST_PACK because SPEED_BOOST_PACK is still under development
+        spawnEquipment(FRENZY_PACK, x, y);
 
     }
+}
+
+
+//Spawn equipment at the position where the enemy unit is detroyed
+void Game::spawnEquipment(EquipmentName name, double x, double y){
+
+    equipment = new Equipment(name, x, y, refreshTimer, this);
+    scene->addItem(equipment);
+    connect(equipment, SIGNAL(equipped(EquipmentName)), this, SLOT(applyEquipmentEffect(EquipmentName)));
 
 }
 
-void Game::spawnEnemyPeojectile(double degree, double x, double y)
-{
+//Apply corresponding equipment effect to the jet
+void Game::applyEquipmentEffect(EquipmentName name){
 
-    enemyProjectile = new EnemyProjectile(degree, x, y, refreshRate, this);
-    scene->addItem(enemyProjectile);
-
-}
-
-void Game::addMeteor(){
-
-    enemy = new Meteor(refreshRate, this);
-    connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(spawnEquipment(double, double, double)));
-    scene->addItem(enemy);
-
-}
-
-void Game::addSpider(){
-
-    enemy = new Spider(refreshRate, this);
-    connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(spawnEquipment(double, double, double)));
-    connect(enemy, SIGNAL(enemyProjectileIsLaunched(double, double, double)), this, SLOT(spawnEnemyPeojectile(double, double, double)));
-    scene->addItem(enemy);
-
-}
-
-void Game::addSatellite(){
-    enemy = new Satellite(refreshRate, this);
-    connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(spawnEquipment(double, double, double)));
-    scene->addItem(enemy);
-}
-
-void Game::spawnHorrorDisk(){
-
-    enemy = new HorrorDisk(refreshRate, this);
-    connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(spawnEquipment(double, double, double)));
-    connect(enemy, SIGNAL(enemyProjectileIsLaunched(double, double, double)), this, SLOT(spawnEnemyPeojectile(double, double, double)));
-    scene->addItem(enemy);
-
-}
-
-void Game::spawnMotherDisk(){
-
-    enemy = new MotherDisk(refreshRate, this);
-    connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(spawnEquipment(double, double, double)));
-    connect(enemy, SIGNAL(enemyProjectileIsLaunched(double, double, double)), this, SLOT(spawnEnemyPeojectile(double, double, double)));
-    scene->addItem(enemy);
-
-}
-
-void Game::spawnEnemy(){
-
-//    if(killCount == numOfSpiderSpawned){
-
-//        QTimer::singleShot(3000, this, SLOT(spawnBoss()));
-
-//    }
-
-
-
-    if(killCount < 35){
-
-        for(int i = 0; i < 1 + killCount/15; ++i){
-
-            addSpider();
-            ++numOfSpiderSpawned;
-
-        }
-
-    }else if(killCount == numOfSpiderSpawned){
-
-                QTimer::singleShot(2000, this, SLOT(spawnHorrorDisk()));
-                numOfSpiderSpawned = 0;
-
-            }
-
-
-    uniform_int_distribution<std::mt19937::result_type> dist(1, 5); //Distribution in the range [1, 5]
-    unsigned int randNum = dist(rng); //Generate a number in the range [1, 5]
-
-    if(randNum == 1)//20% chance to spawn a satellite when spawning new enemies
-        addSatellite();
-
-    for(int i = 0; i < rand()%3; ++i)
-        addMeteor();
-
-
-
-
-
-    cout << "killed: "<< killCount << endl;
-    cout << "enemySpawned: " << numOfSpiderSpawned << endl;
-
-//    enemy = new Spider(refreshRate, this);
-//    scene->addItem(enemy);
-//    connect(enemy, SIGNAL(enemyIsEliminated(double, double, int)), this, SLOT(spawnEquipment(double, double, int)));
-//    connect(enemy, SIGNAL(enemyProjectileIsLaunched(double, double)), this, SLOT(spawnEnemyPeojectile(double, double))); // ; after SIGNAL() ultra bug
-
-}
-
-void Game::addPlayerProjectile(double degree){
-
-    projectile = new PlayerProjectile(degree, jet->x()+(jet->pixmap().width())*jet->scale()/2, jet->y(), refreshRate, this);
-    scene->addItem(projectile);
-
-
-}
-
-void Game::firePlasmaBeam(){
-
-    addPlayerProjectile(0);
-
-}
-
-void Game::fireFlakkerBeam(){
-
-    for(int i = 0; i < 3; ++i)
-        addPlayerProjectile(337.5+22.5*i);
-
-
-
-}
-
-void Game::fireUltraFlakkerBeam(){
-
-    for(int i = 0; i < 5; ++i)
-        addPlayerProjectile((315+22.5*i));
-
-}
-
-void Game::fire(){
-
-    if(weapon == PLASMA_BEAM){
-
-        firePlasmaBeam();
-
-
-    }else if(weapon == STORMER_BEAM){
-
-        fireFlakkerBeam();
-
-    }else if(weapon == ULTRA_STORMER_BEAM){
-
-        fireUltraFlakkerBeam();
-
+    //Use stack to control the spray effect so that the expiration of 1 effect won't affect the later one
+    if(name == SPRAY_PACK){
+        weapon = SPRAY_BEAM;
+        ++sprayEffectStack; //Push 1 spray effect to the stack
+        QTimer::singleShot(6000, this, SLOT(stopSprayEffect())); //The duration of spray effect is 6 seconds
     }
 
-    ///    weapon = new PlayerProjectile(100, SlightlyTiltLeft, jet->x()+(jet->pixmap().width())/4, jet->y(), refreshRate, this);
-    ///    weapon->setPos(weapon->x()-weapon->pixmap().width()*weapon->scale()/4, weapon->y());
+    else if(name == ULTRA_SPRAY_PACK){
+        weapon = ULTRA_SPRAY_BEAM;
+        ++sprayEffectStack; //Push 1 spray effect to the stack
+        QTimer::singleShot(6000, this, SLOT(stopSprayEffect())); //The duration of spray effect is 6 seconds
+    }
+
+    else if(name == HEALTH_PACK && jet->getHealth() < maxHealthOfJet)
+        jet->heal(100); //Heal 100 health point to jet
+
+    else if(name == FRENZY_PACK && numOfFrenzyPack < maxNumOfFrenzyPack)
+        ++numOfFrenzyPack; //Store 1 frenzy pack
+
+    else if(name == FRENZY_STAR) //Victory item
+        gameIsOver(VICTORY);
+
 }
 
-void Game::stopStormerEffect(){
 
-    if(--stormerEffectStack == 0)
-        weapon = PLASMA_BEAM;
-}
-
-
-
-void Game::stopFrenzyEffect(){
-
-    frenzyTimer->stop();
-    frenzyMode = false;
-}
-
+//Handle key input
 void Game::keyPressEvent(QKeyEvent *event)
 {
-    //If game is over
+    //Restart the game when player pressing R only if the game is over
     if(event->key() == Qt::Key_R && gameOver){
 
-        cout << "restart game" << endl;
-        emit restart();
+        emit restartSignal();
 
     }else if(!gameOver){ //If game is not over yet
 
-        if(event->key() == Qt::Key_J && !event->isAutoRepeat()){ //We use fire-by-click mode here which mean player can not hold the key to fire.
+        if(event->key() == Qt::Key_J && !event->isAutoRepeat()){ //Prevent player to shoot automatically by simply holding the key
 
-
-            if(frenzyMode)
+            if(frenzyMode) //Stop manual firing as frenzy mode == atutomatic firing mode
                 return;
             else
                 fire();
-
-
-//            cout << "Newpressing" << endl;
-//            cout << frenzyTimer->isActive() << endl;
-
-
         }
 
+        //The jet will keep moving in specific direction as long as the player is holding the corresponding movement key
         else if(event->key() == Qt::Key_W)
             goingUp = true;
 
@@ -413,19 +328,21 @@ void Game::keyPressEvent(QKeyEvent *event)
         else if(event->key() == Qt::Key_D)
             goingRight = true;
 
+        //Use 1 frenzy pack upon pressing K only if there is frenzy pack in stock and the jet is not under frenzy mode
         else if(event->key() == Qt::Key_K && numOfFrenzyPack != 0 && !frenzyMode){
 
+            frenzyMode = true; //Jet is going frenzy
+            --numOfFrenzyPack; //Spend 1 frenzy pac
+            frenzyTimer->start(100); //Frenzy mode == atutomatic firing mode(fire 10 projectiles per seconds)
 
-
-            QTimer::singleShot(5000, this, SLOT(stopFrenzyEffect()));
-            frenzyMode = true;
-            --numOfFrenzyPack;
-            frenzyTimer->start(100);
+            QTimer::singleShot(5000, this, SLOT(stopFrenzyEffect()));//The duration of frenzy effect is 5 seconds
 
         }
     }
 }
 
+
+//The jet will stop moving in specific direction upon releasing the corresponding movement key
 void Game::keyReleaseEvent(QKeyEvent *event)
 {
     if(event->key() == Qt::Key_W)
@@ -440,48 +357,84 @@ void Game::keyReleaseEvent(QKeyEvent *event)
     else if(event->key() == Qt::Key_D)
         goingRight = false;
 
-///    else if(event->key() == Qt::Key_Enter && gameOver){
-
-
-///        emit gameIsOver();
-
-///    }
 }
 
 
+//Spawn player projectile according to current weapon type
+void Game::fire(){
+
+    if(weapon == DEFAULT_BEAM){
+
+        fireDefaultBeam();
+
+    }else if(weapon == SPRAY_BEAM){
+
+        fireSprayBeam();
+
+    }else if(weapon == ULTRA_SPRAY_BEAM){
+
+        fireUltraSprayBeam();
+
+    }
+}
+
+
+//Default player's attack that fire single projectile
+void Game::fireDefaultBeam(){
+
+    spawnPlayerProjectile(0);
+
+}
+
+//Special player's attack that fan out 3 projectiles
+void Game::fireSprayBeam(){
+
+    for(int i = 0; i < 3; ++i)
+        spawnPlayerProjectile(337.5+22.5*i);
+
+}
+
+//Special player's attack that fan out 5 projectiles
+void Game::fireUltraSprayBeam(){
+
+    for(int i = 0; i < 5; ++i)
+        spawnPlayerProjectile((315+22.5*i));
+
+}
+
+
+//Spawn player projectile at the current position of jet
+void Game::spawnPlayerProjectile(double degree){
+
+    projectile = new PlayerProjectile(degree, jet->x()+(jet->pixmap().width())/2, jet->y(), refreshTimer, this);
+    scene->addItem(projectile);
+
+}
+
+
+//Pop 1 spray effect from the stack
+void Game::stopSprayEffect(){
+
+    if(--sprayEffectStack == 0) //Switch back to default weapon when all spray effect are expired
+        weapon = DEFAULT_BEAM;
+
+}
+
+
+//Turn off frenzy mode after frenzy effect is running out
+void Game::stopFrenzyEffect(){
+
+    frenzyTimer->stop();
+    frenzyMode = false;
+
+}
+
+
+//Managing the display bar and the status of jet
 void Game::screenEventHandler()
 {
 
-    //Check if the player is colliding with object inherited from class Enemy
-    QList<QGraphicsItem *> colliding_items = jet->collidingItems();
-
-    for (int i = 0, n = colliding_items.size(); i < n; ++i){
-
-        Enemy* enemy = dynamic_cast<Enemy*>(colliding_items[i]);
-
-              if(enemy != nullptr){
-
-                jet->deductHealth(enemy->getHealth()); //Deduct player health with the value of the collided enemy's health
-                enemy->deductHealth(jet->getHealth()); //Vice versa
-
-
-            }
-        }
-
-    //Check if player reach 0 health
-    if(jet->getHealth()<=0){
-
-        delete healthBar;
-
-        //Pause the game
-        pause();
-
-        gameOver = true;//Used by keyPressEvent(), player can press "R" to restart the game after gameOver is true
-
-        return;
-    }
-
-    //Set player position according to 4 boolean value that each represented 1 direction
+    //Jet will move to specific direction when the boolean value of that direction is true
     if(goingUp && jet->y()>=0){
         jet->setY(jet->y()-jet->getStep());
 
@@ -498,122 +451,58 @@ void Game::screenEventHandler()
     if(goingRight && jet->x()<=int(scene->width())-jet->pixmap().width()*jet->scale()){
         jet->setX(jet->x()+jet->getStep());
 
-
-///        jet->setptX(jet->getX() + jet->getStep());
-///        cout << "Right" << endl;
-///        QWidget::update();
     }
 
-    frenzyPackDisplayBar->setNumOfFrenzy(numOfFrenzyPack);
+    //Deduct player's health if jet is colliding with enemy
+    QList<QGraphicsItem *> colliding_items = jet->collidingItems();
 
-    healthBar->setHealth(jet->getHealth());
+    for (int i = 0, n = colliding_items.size(); i < n; ++i){
+
+        Enemy* enemy = dynamic_cast<Enemy*>(colliding_items[i]); //Check if the colliding object is inherited from Enemy
+
+              if(enemy != nullptr){
+
+                jet->deductHealth(enemy->getHealth()); //Deduct player's health with the amount of the enemy's health
+                enemy->deductHealth(jet->getHealth()); //Vice versa
+
+
+            }
+        }
+
+    frenzyPackDisplayBar->setNumOfFrenzy(numOfFrenzyPack); //Update the display bar of possessing frenzy pack
+
+    healthBar->setHealth(jet->getHealth()); //Update the health bar
+
+    //Pause the game if jet reach 0 health
+    if(jet->getHealth()<=0){
+
+        gameIsOver(DEFEAT);
+
+        delete jet;
+
+        return;
+    }
 
 }
 
-///END OF Game.cpp
+
+//Stopping the game and allowing player to restart
+void Game::gameIsOver(Result result){
+
+    pause();
+    gameOver = true; //Player can press "R" to restart the game after game is over
+
+    resultBoard = new ResultBoard(result, 640, 300, this);
+    scene->addItem(resultBoard);
+
+}
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Freeze the program by stopping the timers
+void Game::pause(){
 
-
-
-//void Game::timerEvent(QTimerEvent *event){
-
-
-
-//    if(event->timerId() == initialAnimationTimer){
-
-//        jet->setPos(jet->x(), jet->y()-1);
-
-//        if(jet->y() <= 600)
-//             playerControlAvailable();
-//    }
-
-//}
-
-//void Game::timerEvent(QTimerEvent *event)
-//{
-
-
-
-//if(event->timerId() == fps){
-//    if(goingUp && jet->getY()!=0){
-//        jet->setptY(jet->getY() - jet->getStep());
-////        cout << "Up" << endl;
-////        QWidget::update();
-//    }
-
-//    if(goingDown && jet->getY()<=int(scene->height())-jet->pixmap().rect().height()*jet->scale()){
-//        jet->setptY(jet->getY() + jet->getStep());
-////        cout << "Down" << endl;
-////        QWidget::update();
-//    }
-//    if(goingLeft && jet->getX()!=0){
-//        jet->setptX(jet->getX() - jet->getStep());
-////        cout << "Left" << endl;
-////        QWidget::update();
-//    }
-//    if(goingRight && jet->getX()<=int(scene->width())-jet->pixmap().width()*jet->scale()){
-//        jet->setptX(jet->getX() + jet->getStep());
-////        cout << "Right" << endl;
-////        QWidget::update();
-//    }}
-
-
-
-//}
-
-//if(event->timerId() == fireRate){
-//    cout << "up: " << goingUp << endl;
-//    cout << "down: " << goingDown << endl;
-//    cout << "left: " << goingLeft << endl;
-//    cout << "right: " << goingRight << endl << endl;
-
-//        weapon = new Projectile(100, 0, -1, gunslinger->getX()+(gunslinger->pixmap().width())/8, gunslinger->getY(), timer, this);
-//        scene->addItem(weapon);
-
-//    /*}else if(goingUp && !goingDown && goingLeft && !goingRight){
-
-//        weapon = new Projectile(100, -tilt, -tilt, gunslinger->getX(), gunslinger->getY(), timer, this);
-//        scene->addItem(weapon);
-//        cout << "firing to left right direction" << endl;
-
-//    }else if(!goingUp && !goingDown && goingLeft && !goingRight){
-
-//        weapon = new Projectile(100, -1, 0, gunslinger->getX(), gunslinger->getY(), timer, this);
-//        scene->addItem(weapon);
-
-//    }else if(!goingUp && goingDown && goingLeft && !goingRight){
-
-//        weapon = new Projectile(100, -tilt, tilt, gunslinger->getX(), gunslinger->getY(), timer, this);
-//        scene->addItem(weapon);
-
-//    }else if(!goingUp && goingDown && !goingLeft && !goingRight){
-
-//        weapon = new Projectile(100, 0, 1, gunslinger->getX(), gunslinger->getY(), timer, this);
-//        scene->addItem(weapon);
-
-//    }else if(!goingUp && goingDown && !goingLeft && goingRight){
-
-//        weapon = new Projectile(100, tilt, tilt, gunslinger->getX(), gunslinger->getY(), timer, this);
-//        scene->addItem(weapon);
-
-//    }else if(!goingUp && !goingDown && !goingLeft && goingRight){
-
-//        weapon = new Projectile(100, 1, 0, gunslinger->getX(), gunslinger->getY(), timer, this);
-//        scene->addItem(weapon);
-
-//    }else if(goingUp && !goingDown && !goingLeft && goingRight){
-
-//        weapon = new Projectile(100, tilt, -tilt, gunslinger->getX(), gunslinger->getY(), timer, this);
-//        scene->addItem(weapon);
-//    }*/
-
-
-
-
-//}
-
-
-
+    refreshTimer->stop();
+    frenzyTimer->stop();
+    enemySpawningTimer->stop();
+}
 

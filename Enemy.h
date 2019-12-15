@@ -11,35 +11,23 @@ class Enemy: public Movable, public QGraphicsPixmapItem{
 
 public:
 
-    explicit Enemy(QTimer* timer, QObject* parent);
+    Enemy(QTimer* timer, QObject* parent);
     int getHealth();
     virtual void deductHealth(int hp);
 
 protected:
 
-    int randVer;
-    int randHor;
+
     int health;
     double dropRate;
 
-//    int tilt;
-//    int randMovePeriod;
-//    double spawnFactor;
-
-    QTimer* refreshRate;
     QPixmap pix;
 
 signals:
     void spawnEquipmentSignal(double x, double y, double dropRate);
-    void enemyProjectileIsLaunched(double degree, double x, double y);
+    void spawnEnemyProjectileSignal(double degree, double x, double y);
 
 
-
-//    void fireSignal();
-
-//public slots:
-//    void move() override;
-//    void emitFireSignal();
 
 };
 

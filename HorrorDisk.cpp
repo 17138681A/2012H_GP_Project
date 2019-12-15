@@ -5,104 +5,87 @@
 HorrorDisk::HorrorDisk(QTimer* timer, QObject* parent):Enemy(timer, parent){
 
 
-    randDirOfX = -1 + 2*(rand()%2);
-    randDirOfY = -1 + 2*(rand()%2);
-    health = 2400;
-    dropRate = 21;
-    rotationDegree = 0;
-    attackCounter = 0;
-    numOfBurst = 1;
-    isArriving = true;
-    isRaging = false;
+    randDirOfX = -1 + 2*(rand()%2); //Randomize initial horizontal direction of movement after entering the game
+    randDirOfY = -1 + 2*(rand()%2); //Randomize initial vertical direction of movement after entering the game
+
+    health = 2400; //Set health
+    dropRate = 20; //100% chance to spawn an ultra spray pack
+    rotationDegree = 0; //To rotate the iamge of this object
+
+    shotCounter = 0; //To count how many shot was made in each wave of attack
+    maxNumOfShot = 1; //To indicate how many shot should made in each wave of attack
+
+    isArriving = true; //Entering the game
+    rage = false; //Special attack and behavior after getting rage
 
     pix = QPixmap(":/image/ufoBlue.png");
-
     setPixmap(pix);
-    setStep(1);
-    setPos(640-pixmap().width()*scale()/2, 0);
+
+    setStep(1); //Set movement speed
+    setPos(640-pixmap().width()/2, 0);
     setScale(1.5);
-    setTransformOriginPoint(pixmap().width()/2, pixmap().height()/2);
+    setTransformOriginPoint(pixmap().width()/2, pixmap().height()/2); //Set rotation point to center
 
 }
 
-void HorrorDisk::emitEnemyProjectileIsLaunchedSignal()
+void HorrorDisk::emitSpawnEnemyProjectileSignal()
 {
-//    cout << "projectile is launched" << endl;
 
-
-
-
-        attackCounter++;
-
-        if(attackCounter%numOfBurst == 0){
-            disconnect(burstTimer, SIGNAL(timeout()), this, SLOT(emitEnemyProjectileIsLaunchedSignal()));
-            QTimer::singleShot(2000, this, SLOT(startBursting()));
-        }
-
+        //Shoot 16 projectiles in all direction
         for(double j = 0; j < 360; j+=22.5)
-            emit enemyProjectileIsLaunched(j, x()+pixmap().width()/2, y()+pixmap().height()/2);
+            emit spawnEnemyProjectileSignal(j, x()+pixmap().width()*scale()/2, y()+pixmap().height()*scale()/2);
 
+        shotCounter++;
 
+        //Shoot 1 time when maxNumOfShot == 1, shoot 2 times when maxNumOfShot == 2
+        if(shotCounter%maxNumOfShot == 0){
 
+            disconnect(fireRateTimer, SIGNAL(timeout()), this, SLOT(emitSpawnEnemyProjectileSignal())); //Stop shooting
+            QTimer::singleShot(2000, this, SLOT(startShooting())); //2 seconds delay between each attack wave
 
-
-
+        }
 }
 
-void HorrorDisk::startBursting(){
+void HorrorDisk::startShooting(){
 
-
-    connect(burstTimer, SIGNAL(timeout()), this, SLOT(emitEnemyProjectileIsLaunchedSignal()));
+    connect(fireRateTimer, SIGNAL(timeout()), this, SLOT(emitSpawnEnemyProjectileSignal()));
 
 }
-
-//void HorrorDisk::stopShooting(){
-
-//    QTimer::singleShot(2000, this, SLOT(startBursting()));
-//    disconnect(attackTimer, SIGNAL(timeout()), this, SLOT(emitEnemyProjectileIsLaunchedSignal()));
-
-
-//}
 
 void HorrorDisk::move(){
 
-    setRotation(++rotationDegree);
+    setRotation(++rotationDegree); //Rotation speed is 1 degree per refreshTimer's interval
 
     if(isArriving){
 
-        setY(y()+step);
+        setY(y()+step); //Entering the game
 
-        if(y() >= 400){
+        if(y() >= 400){ //Entering combat mode after reaching a certain postion
 
             isArriving = false;
 
-            burstTimer = new QTimer(this);
-            burstTimer->start(200);
-            connect(burstTimer, SIGNAL(timeout()), this, SLOT(emitEnemyProjectileIsLaunchedSignal()));
+            fireRateTimer = new QTimer(this);
+            fireRateTimer->start(100);
+            connect(fireRateTimer, SIGNAL(timeout()), this, SLOT(emitSpawnEnemyProjectileSignal()));
 
-//            attackTimer = new QTimer(this);
-//            attackTimer->start(2000);
-//            connect(attackTimer, SIGNAL(timeout()), this, SLOT(emitEnemyProjectileIsLaunchedSignal()));
-
-//            emitEnemyProjectileIsLaunchedSignal();
-
-            setStep(2);
+            setStep(2); //Move faster during combat mode
 
         }
 
     }else {
 
-        if(health < 800 && !isRaging){
+        if(health < 800 && !rage){
 
-            isRaging = true;
+            rage = true;
 
-            numOfBurst++;
-            setStep(3);
+            maxNumOfShot++; //Make 2 shot in each attack wave after getting rage
+            setStep(3); //Move faster after getting rage
 
             pix = QPixmap(":/image/ufoRed.png");
             setPixmap(pix);
         }
 
+        //Bounce back upon reaching the border of the window
         if(y() <= 0)
             randDirOfY = 1;
 

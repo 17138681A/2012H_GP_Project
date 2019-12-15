@@ -8,16 +8,16 @@ HealthBar::HealthBar(QObject* parent){
 
     pix = QPixmap(":/image/hp07.png");
     setPixmap(pix);
+
     setScale(0.18);
     setPos(40, 820);
 
 }
 
+//Update the status of player's current health
 void HealthBar::setHealth(int hp){
 
-
-
-
+    //Each image indicates each status of player's current health
     if(hp <= 25)
         pix = QPixmap(":/image/hp01.png");
 
@@ -40,5 +40,8 @@ void HealthBar::setHealth(int hp){
         pix = QPixmap(":/image/hp07.png");
 
     setPixmap(pix);
+
+    if(hp <= 0)
+        delete this;
 
 }

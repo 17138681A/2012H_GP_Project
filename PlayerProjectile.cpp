@@ -7,104 +7,51 @@
 
 PlayerProjectile::PlayerProjectile( double degree, double x, double y, QTimer* timer, QObject *parent)
 {
-    pix = QPixmap(":/image/laserRed03.png");
+
 
     damage = 20;
-    projectileDegree = degree;
+    projectileDegree = degree; //Projectile can shoot from different angle
+
+    pix = QPixmap(":/image/laserRed03.png");
     setPixmap(pix);
 
-//    setDx(dx);
-//    setDy(dy);
-    setStep(10);
+    setStep(10); //Set projectile speed
     setPos(x-pixmap().width()/2,y);
     setScale(1);
 
-    connect(timer,SIGNAL(timeout()), this, SLOT(move()));
-
+    refreshTimer = timer;
+    connect(refreshTimer,SIGNAL(timeout()), this, SLOT(move())); //Update object's status and position
 
 }
 
 void PlayerProjectile::move(){
 
+
+    //Deduct the enemy health if the player's projectile is colliding with the enemy
     QList<QGraphicsItem *> colliding_items = collidingItems();
 
     for (int i = 0, n = colliding_items.size(); i < n; ++i){
 
-
-
-        Enemy* enemy = dynamic_cast<Enemy*>(colliding_items[i]);
-
-
+        Enemy* enemy = dynamic_cast<Enemy*>(colliding_items[i]); //Check if the colliding object is inherited from Enemy
 
               if(enemy != nullptr){
 
+                enemy->deductHealth(damage); //Deal damage to enemy
 
-                enemy->deductHealth(damage);
+                delete this; //Delete this projectile when colliding with enemy
 
-                // delete them from the heap to save memory
-                delete this;
-
-                // return (all code below refers to a non existint bullet)
                 return;
             }
         }
 
-    setRotation(projectileDegree);
+    setRotation(projectileDegree); //Rotate the image of projectile
+
+    //The projectile speed will stay the same when shooting from different angle
     setY(y()-step*qCos(qDegreesToRadians(projectileDegree)));
     setX(x()+step*qSin(qDegreesToRadians(projectileDegree)));
 
     if(y() + pixmap().height()*scale() < 0)
-        delete this;
+        delete this; //Delete this projectile when going out of scene
 
 }
 
-//        setRotation(22.5);
-//        setY(y()-step*slightlyTiltDegreeOfY);
-//        setX(x()+step*slightlyTiltDegreeOfX);
-
-//    }else if(tilt == SlightlyTiltLeft){
-
-//        setRotation(-22.5);
-//        setY(y()-step*slightlyTiltDegreeOfY);
-//        setX(x()-step*slightlyTiltDegreeOfX);
-
-//    }else if(tilt == ExtremelyTiltRight){
-
-//        setRotation(45);
-//        setY(y()-step*extremelyTiltDegreeOfY);
-//        setX(x()+step*extremelyTiltDegreeOfX);
-
-//    }else if(tilt == ExtremelyTiltLeft){
-
-//        setRotation(-45);
-//        setY(y()-step*extremelyTiltDegreeOfY);
-//        setX(x()-step*extremelyTiltDegreeOfX);
-
-//    }else if(tilt == NoTilt)
-//            setY(y()-step);
-
-//void PlayerProjectile::setFireRate(int fr){
-
-//    fireRate = fr;
-
-//}
-
-//    setPos(double(x()),double(y()-step));
-
-//void PlayerProjectile::setDx(double x){
-
-//    dx = x;
-//}
-
-//void PlayerProjectile::setDy(double y){
-
-//    dy = y;
-//}
-
-//void Projectile::rotate(double degree)
-//{
-//    setTransformOriginPoint(this->pixmap().rect().center());
-
-//}
-
-//            if (typeid(*(qgraphicsitem_cast<Enemy*>(colliding_items[i]))) == typeid(Enemy)){

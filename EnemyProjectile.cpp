@@ -3,18 +3,17 @@
 
 EnemyProjectile::EnemyProjectile(double degree, double x, double y, QTimer* timer, QObject* parent){
 
-//    health = 1;
-//    dropRate = -1; //Projectile won't drop any item
     damage = 50;
     pix = QPixmap(":/image/laserBlue05.png");
     projectileDegree = degree;
+    refreshTimer = timer;
 
     setPixmap(pix);
     setStep(5);
     setPos(x-pixmap().width()/2,y);
     setScale(1);
 
-    connect(timer,SIGNAL(timeout()), this, SLOT(move()));
+    connect(refreshTimer,SIGNAL(timeout()), this, SLOT(move()));
 
 }
 
@@ -41,7 +40,7 @@ void EnemyProjectile::move()
 
     if(y() >= 960 || x() >= 1280 || x()+pixmap().height()*scale() <= 0 || y()+pixmap().height()*scale() <= 0){
         delete this;
-        cout << "deleted" << endl;
+
     }
 
 

@@ -4,8 +4,8 @@
 Enemy::Enemy(QTimer* timer, QObject* parent){
 
 
-    refreshRate = timer;
-    connect(refreshRate, SIGNAL(timeout()), this, SLOT(move()));
+    refreshTimer = timer;
+    connect(refreshTimer, SIGNAL(timeout()), this, SLOT(move()));
     setZValue(1);
 
 
@@ -28,21 +28,3 @@ void Enemy::deductHealth(int hp){
 
 }
 
-
-//void Enemy::move(){
-
-////    if(y()>=randVer){
-////        disconnect(refreshRate, SIGNAL(timeout()), this, SLOT(move()));
-//////        refreshRate = new QTimer(this);
-//////        refreshRate->start(3000);
-//////        connect(refreshRate, SIGNAL(timeout()), this, SLOT(emitFireSignal()));
-////    }else
-
-////    setPos(x(), y()+step);
-
-//}
-
-//void Enemy::emitFireSignal(){
-
-//    emit fireSignal();
-//}

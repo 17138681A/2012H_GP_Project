@@ -8,8 +8,7 @@ class Meteor: public Enemy{
 
 public:
 
-    explicit Meteor(QTimer* timer, QObject* parent);
-
+    Meteor(QTimer* timer, QObject* parent);
 
 public slots:
 
@@ -17,8 +16,10 @@ public slots:
 
 private:
 
-    int rotationDegree;
-    int randMeteor;
+    int rotationDegree; //To rotate the image of this object
+    int rotationDir; //Rotate in either clockwise or anti-clockwise
+    int randShape; //Spawn with random shape
+    int randHor; //Spawn randomly whitin the horizontal range
 
 };
 

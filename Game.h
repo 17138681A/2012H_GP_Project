@@ -5,12 +5,15 @@
 #include "Jet.h"
 #include "PlayerProjectile.h"
 #include "Guide.h"
-#include "Spider.h"
+
 #include "FrenzyPackDisplayBar.h"
 #include "HealthBar.h"
+#include "ResultBoard.h"
 #include "Equiment.h"
 #include "Meteor.h"
 #include "Satellite.h"
+#include "Mosquito.h"
+#include "Beetle.h"
 #include "HorrorDisk.h"
 #include "MotherDisk.h"
 #include "EnemyProjectile.h"
@@ -38,25 +41,27 @@ public:
 
 signals:
 
-    void restart();
+    void restartSignal();
 
 public slots:
 
-    void fire();
-    void stopFrenzyEffect();
-    void screenEventHandler();
-    void playerControlAvailable();
-    void spawnEnemy();
+    void checkJetPosition();
+    void setCombatEnvironment();
+
+    void spawnEnemyWave();
     void spawnHorrorDisk();
     void spawnMotherDisk();
-    void spawnEquipment(double x, double y, double dropRate);
+
+    void drawEquipment(double x, double y, double dropRate);
+    void applyEquipmentEffect(EquipmentName);/// Day 5
+
+    void fire();
     void spawnEnemyPeojectile(double degree, double x, double y);
-    void addEquipmentEffect(EquipmentName);/// Day 5
-    void stopStormerEffect();
-    void opening();
 
+    void stopSprayEffect();
+    void stopFrenzyEffect();
 
-
+    void screenEventHandler();
 
 private:
 
@@ -75,54 +80,51 @@ private:
     EnemyProjectile* enemyProjectile;
     FrenzyPackDisplayBar* frenzyPackDisplayBar;
     HealthBar* healthBar;
+    ResultBoard* resultBoard;
 
-    //4 async event
-    QTimer* refreshRate;
+
+    //Timers  for handling the game events
+    QTimer* refreshTimer;
     QTimer* frenzyTimer;
     QTimer* enemySpawningTimer;
     QTimer* openingTimer;
 
-    mt19937 rng;
+    mt19937 rng;//Random number generator
 
-//    int fps;
-//    int fireRate;
-
-
-    //Readibility
     ProjectileType weapon;
 
     int numOfFrenzyPack;
-    int stormerEffectStack;
-    int killCount;
-    int numOfSpiderSpawned;
+    int sprayEffectStack;
+    int numOfDestroyedMosquito;
+    int numOfSpawnedMosquito;
 
-    bool goingUp = false;
-    bool goingDown = false;
-    bool goingLeft = false;
-    bool goingRight = false;
-    bool firing = false;
-    bool frenzyMode = false;
-    bool gameOver = false;
+    bool goingUp;
+    bool goingDown;
+    bool goingLeft;
+    bool goingRight;
+    bool firing;
+    bool frenzyMode;
+    bool gameOver;
+    bool bossFight;
+
+    void createOpening();
+    void pause();
+    void gameIsOver(Result result);
+
+    void spawnPlayerProjectile(double degree);
+    void spawnEquipment(EquipmentName name, double x, double y);
+    void spawnMosquito();
+    void spawnBeetle();
+    void spawnMeteor();
+    void spawnSatellite();
+
+    void fireDefaultBeam();
+    void fireSprayBeam();
+    void fireUltraSprayBeam();
 
     void keyPressEvent(QKeyEvent* event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
 
-    void addPlayerProjectile(double degree);
-    void addEquipment(EquipmentName name, double x, double y);
-    void addSpider();
-    void addMeteor();
-    void addSatellite();
-
-    void firePlasmaBeam();
-    void fireFlakkerBeam();
-    void fireUltraFlakkerBeam();
-
-    void pause();
-    //    void paintEvent(QPaintEvent* event) override;
-    //    void timerEvent(QTimerEvent* event) override;
-
-
-    void victory();
 };
 
 #endif // GAME_H

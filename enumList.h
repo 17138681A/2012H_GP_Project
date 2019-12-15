@@ -3,16 +3,16 @@
 
 enum ProjectileType{
 
-    PLASMA_BEAM,
-    STORMER_BEAM,
-    ULTRA_STORMER_BEAM
+    DEFAULT_BEAM,
+    SPRAY_BEAM,
+    ULTRA_SPRAY_BEAM
 
 };
 
 enum EquipmentName{
 
-    STORMER_PACK,
-    ULTRA_STORMER_PACK,
+    SPRAY_PACK,
+    ULTRA_SPRAY_PACK,
     SPEEDBOOST_PACK,
     FRENZY_PACK,
     HEALTH_PACK,
@@ -21,12 +21,10 @@ enum EquipmentName{
 
 };//Day 5
 
-enum Tilt{
-    NoTilt,
-    SlightlyTiltLeft,
-    SlightlyTiltRight,
-    ExtremelyTiltLeft,
-    ExtremelyTiltRight
+enum Result{
+
+    VICTORY,
+    DEFEAT
 };
 
 #endif // ENUMLIST_H

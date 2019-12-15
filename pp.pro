@@ -16,6 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    Beetle.cpp \
     Enemy.cpp \
     EnemyProjectile.cpp \
     Equipment.cpp \
@@ -26,15 +27,17 @@ SOURCES += \
     HorrorDisk.cpp \
     Jet.cpp \
     Meteor.cpp \
+    Mosquito.cpp \
     MotherDisk.cpp \
     MovableObj.cpp \
     PlayerProjectile.cpp \
+    ResultBoard.cpp \
     Satellite.cpp \
-    Spider.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
+    Beetle.h \
     Enemy.h \
     EnemyProjectile.h \
     Equiment.h \
@@ -45,11 +48,12 @@ HEADERS += \
     HorrorDisk.h \
     Jet.h \
     Meteor.h \
+    Mosquito.h \
     MotherDisk.h \
     MovableObj.h \
     PlayerProjectile.h \
+    ResultBoard.h \
     Satellite.h \
-    Spider.h \
     enumList.h \
     mainwindow.h
 

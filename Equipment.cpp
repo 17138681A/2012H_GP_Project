@@ -5,34 +5,15 @@
 Equipment::Equipment(EquipmentName equipment, double x, double y, QTimer* timer, QObject* parent)
 {
 
-//    randNum = rand()%4;
     name = equipment;
-    refreshRate = timer;
+    refreshTimer = timer;
     randDirOfX = -1 + 2*(rand()%2);
     randDirOfY = -1 + 2*(rand()%2);
 
-//    if(randNum == 0){
-//        randDirOfX = 1;
-//        randDirOfY = 1;
-
-//    }else if(randNum == 1){
-//        randDirOfX = 1;
-//        randDirOfY = -1;
-
-//    }else if(randNum == 2){
-//        randDirOfX = -1;
-//        randDirOfY = 1;
-
-//    }else if(randNum == 3){
-//        randDirOfX = -1;
-//        randDirOfY = -1;
-//    }
-
-
-    if(name == STORMER_PACK)
+    if(name == SPRAY_PACK)
         pix = QPixmap(":/image/flakker.png");
 
-    else if(name == ULTRA_STORMER_PACK)
+    else if(name == ULTRA_SPRAY_PACK)
         pix = QPixmap(":/image/ultra_flakker.png");
 
     else if(name == HEALTH_PACK)
@@ -48,13 +29,14 @@ Equipment::Equipment(EquipmentName equipment, double x, double y, QTimer* timer,
     setPixmap(pix);
     setStep(1);
     setPos(x,y);
+
     if(name == FRENZY_STAR)
         setScale(2);
     else
         setScale(0.1);
 
 
-    connect(refreshRate, SIGNAL(timeout()), this, SLOT(move()));
+    connect(refreshTimer, SIGNAL(timeout()), this, SLOT(move()));
 
 }
 

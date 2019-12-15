@@ -13,8 +13,9 @@ public slots:
     void move() override;
 
 private:
-    int rotationDegree;
-    int randDir;
+    int rotationDegree; //To rotate the image of this object
+    int randDir; //Satellite can either spawn from left or right
+    int randVer; //Spawn randomly whitin the vertical range
 
 };
 

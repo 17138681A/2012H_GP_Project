@@ -19,30 +19,24 @@ Q_OBJECT
 
 public:
 
-    enum Direction{
-            UP,
-            DOWN,
-            LEFT,
-            RIGHT
-        };
 
     explicit Jet(double x, double y, QTimer* timer, QObject *parent);
 
-    void setDirection(Direction direction);
-    void deductHealth(int hp);
-    void addHealth(int hp);//Day 5
+    void arrived(); //Jet is ready for combat
+    void deductHealth(int hp); //Deduct certain health point
+    void heal(int hp); //Add certain health point
 
-    int getHealth();
-
-
+    int getHealth(); //Get current health point
 
 
 private:
 
-    int health;
-    QPixmap pix;
-    Direction dir;
+    const int maxHealth = 300; //Maximum health
 
+    int health; //Current health
+    bool isArriving; //Entering the game
+
+    QPixmap pix;
 
 public slots:
 
@@ -50,14 +44,8 @@ public slots:
 
 #endif // JET_H
 
-//    void keyPressEvent(QKeyEvent* event) override;
-//    void keyReleaseEvent(QKeyEvent *event) override;
-////    void paintEvent(QPaintEvent* event) override;
-//    void timerEvent(QTimerEvent* event) override;
 
 
-
-//    void move(Direction) override;
 
 
 

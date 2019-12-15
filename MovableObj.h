@@ -16,42 +16,19 @@ Q_OBJECT
 
 public:
 
-    double getStep() const;
-    void setStep(double s);
-    virtual ~Movable() {}
-
-
-//    double getX() const;
-//    double getY() const;
-//    int getHeight() const;
-//    int getWidth() const;
-
-
-//    void setptX(double x);
-//    void setptY(double y);
-//    void setHeight(int h);
-//    void setWidth(int w);
-
-
+    double getStep() const; //Get movement speed(distance per frame)
+    void setStep(double s); //Set movement speed(distance per frame)
 
 protected:
 
-    double step;//Movement speed
+    double step; //Movement speed(distance per frame)
 
-//    double ptX;
-//    double ptY;
-//    int objHeight;
-//    int objWidth;
-
+    QTimer* refreshTimer; //Object's status is updating in the same frequency with the game's refresh rate
 
 public slots:
-    virtual void move() = 0;
+
+    virtual void move() = 0; //To be overrided so each child object has its distinct behaviour
 
 
-
-
-
-
-//    virtual void move(Direction) = 0;
 };
 #endif // MOVABLEOBJ_H

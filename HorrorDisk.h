@@ -11,29 +11,27 @@ Q_OBJECT
 
 public:
 
-    explicit HorrorDisk(QTimer* timer, QObject* parent);
+    HorrorDisk(QTimer* timer, QObject* parent);
 
 public slots:
-    void emitEnemyProjectileIsLaunchedSignal();
+    void emitSpawnEnemyProjectileSignal();
     void move() override;
-    void startBursting();
-//    void stopShooting();
+    void startShooting();
+
 
 private:
 
-    int rotationDegree;
-    int randDirOfX;
-    int randDirOfY;
-    int attackPeriod;
-    int attackCounter;
-    int numOfBurst;
+    int rotationDegree; //To rotate the image of this object
+    int randDirOfX; //Randomize initial horizontal direction of movement after entering the game
+    int randDirOfY; //Randomize initial vertical direction of movement after entering the game
+    int shotCounter; //To count how many shot was made in each wave of attack
+    int maxNumOfShot; //To indicate how many shot should made in each wave of attack
 
-    bool isArriving;
-    bool isRaging;
-//    bool bursting;
+    bool isArriving; //Entering the game
+    bool rage; //Special attack and behavior after getting rage
 
-//    QTimer* attackTimer;
-    QTimer* burstTimer;
+
+    QTimer* fireRateTimer; //To detemine the fire rate in each attack wave
 
 };
 

@@ -27,23 +27,15 @@ public:
 
 public slots:
 
-    void restart();
+    void restart(); //Recreate a new Game object
 
 private:
 
     Ui::MainWindow *ui;
-    Game* game;
+    Game* game; //Pointer to the Game object
 
-    void establishGame();
+    void establishGame(); //Attach Game object to the main window
 
-
-    //    bool gameOver = false;
-    //    Gunslinger gunslinger;
-    //    bool goingUp = false, goingDown = false, goingLeft = false, goingRight = false;
-    //    void keyPressEvent(QKeyEvent* event) override;
-    //    void keyReleaseEvent(QKeyEvent *event) override;
-    ////    void paintEvent(QPaintEvent* event) override;
-        //    void timerEvent(QTimerEvent* event) override;
 };
 
 #endif // MAINWINDOW_H

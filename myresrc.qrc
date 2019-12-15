@@ -35,5 +35,8 @@
         <file>image/ufoRed.png</file>
         <file>image/ufoYellow.png</file>
         <file>image/star_gold.png</file>
+        <file>image/defeat.png</file>
+        <file>image/victory.png</file>
+        <file>image/enemyBlue4.png</file>
     </qresource>
 </RCC>

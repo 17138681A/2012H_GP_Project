@@ -7,7 +7,7 @@ class HealthBar: public QGraphicsPixmapItem{
 public:
 
     HealthBar(QObject* parent);
-    void setHealth(int hp);
+    void setHealth(int hp); //Update the status of player's current health
 
 
 private:

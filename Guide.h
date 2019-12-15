@@ -4,6 +4,7 @@
 
 #include <QGraphicsPixmapItem>
 
+
 class Guide: public QGraphicsPixmapItem{
 
 public:

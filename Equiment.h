@@ -11,8 +11,6 @@ Q_OBJECT
 
 public:
 
-
-
     Equipment(EquipmentName name, double x, double y, QTimer* timer, QObject* parent);
 
 protected:
@@ -22,7 +20,6 @@ protected:
     int randDirOfX;
     int randDirOfY;
     QPixmap pix;
-    QTimer* refreshRate;
 
 signals:
     void equipped(EquipmentName); //Day 5
