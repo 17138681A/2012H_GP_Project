@@ -18,7 +18,7 @@ Satellite::Satellite(QTimer* timer, QObject* parent):Enemy(timer, parent){
         setPos(0 - pixmap().width()*scale(), randVer); //Spawn from left when randDir == 1
 
     setPixmap(pix);
-    setStep(4); //Set movement speed
+    setStep(3); //Set movement speed
     setScale(0.5);
     setTransformOriginPoint(pixmap().width()/2, pixmap().height()/2); //Set rotation point to center
 

@@ -6,8 +6,8 @@ Beetle::Beetle(QTimer* timer, QObject* parent):Enemy(timer, parent){
     randHor = 100 + rand()%1080;
     randVer = 50 + rand()%300;
 
-    health = 400;
-    dropRate = 0.5; //5% item droprate
+    health = 240;
+    dropRate = 0.5; //50% chance to spawn an equipment after getting destroyed
 
     isArriving = true;
 
@@ -17,8 +17,6 @@ Beetle::Beetle(QTimer* timer, QObject* parent):Enemy(timer, parent){
     setStep(1.5);
     setPos(randHor, 0);
     setScale(1);
-
-
 
 }
 

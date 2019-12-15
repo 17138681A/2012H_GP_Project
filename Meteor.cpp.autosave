@@ -28,8 +28,6 @@ Meteor::Meteor(QTimer* timer, QObject* parent):Enemy(timer, parent){
     setScale(1);
     setTransformOriginPoint(pixmap().width()/2, pixmap().height()/2); //Set rotation point to center
 
-
-
 }
 
 void Meteor::move(){

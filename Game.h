@@ -1,7 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
 
-
 #include "Jet.h"
 #include "PlayerProjectile.h"
 #include "Guide.h"
@@ -58,10 +57,10 @@ public slots:
     void fire();
     void spawnEnemyPeojectile(double degree, double x, double y);
 
-    void stopSprayEffect();
-    void stopFrenzyEffect();
+    void stopSprayEffect(); //Pop 1 spray effect from the stack
+    void stopFrenzyEffect(); //Turn off frenzy mode after frenzy effect is running out
 
-    void screenEventHandler();
+    void screenEventHandler(); //Managing the display bar and the status of jet
 
 private:
 
@@ -82,7 +81,6 @@ private:
     HealthBar* healthBar;
     ResultBoard* resultBoard;
 
-
     //Timers  for handling the game events
     QTimer* refreshTimer;
     QTimer* frenzyTimer;
@@ -96,7 +94,9 @@ private:
     int numOfFrenzyPack;
     int sprayEffectStack;
     int numOfDestroyedMosquito;
+    int numOfDestroyedBeetle;
     int numOfSpawnedMosquito;
+    int numOfSpawnedBeetle;
 
     bool goingUp;
     bool goingDown;
@@ -106,12 +106,13 @@ private:
     bool frenzyMode;
     bool gameOver;
     bool bossFight;
+    bool miniBossFight;
 
     void createOpening();
-    void pause();
-    void gameIsOver(Result result);
+    void pause(); //Freeze the program by stopping the timers
+    void gameIsOver(Result result); //Stopping the game and allowing player to restart
 
-    void spawnPlayerProjectile(double degree);
+    void spawnPlayerProjectile(double degree); //Spawn player projectile at the current position of jet
     void spawnEquipment(EquipmentName name, double x, double y);
     void spawnMosquito();
     void spawnBeetle();
@@ -120,7 +121,7 @@ private:
 
     void fireDefaultBeam();
     void fireSprayBeam();
-    void fireUltraSprayBeam();
+    void fireUltraSprayBeam(); //Special player's attack that fan out 5 projectiles
 
     void keyPressEvent(QKeyEvent* event) override;
     void keyReleaseEvent(QKeyEvent *event) override;

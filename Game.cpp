@@ -22,7 +22,8 @@ Game::Game(QObject* parent)
     sprayEffectStack = 0;
     numOfDestroyedMosquito = 0;
     numOfSpawnedMosquito = 0;
-
+    numOfSpawnedBeetle = 0;
+    numOfDestroyedBeetle = 0;
     goingUp = false;
     goingDown = false;
     goingLeft = false;
@@ -30,7 +31,9 @@ Game::Game(QObject* parent)
     firing = false;
     frenzyMode = false;
     gameOver = false;
+    miniBossFight = false;
     bossFight = false;
+
 
     srand((unsigned)time(0)); //Set seed for random number
 
@@ -104,29 +107,29 @@ void Game::setCombatEnvironment()
 
 void Game::spawnEnemyWave(){
 
-    //Player need to elminate 40 mosquitos in order to proceed to the mini boss fight
-    if(numOfSpawnedMosquito < 40){
-
-        //Spawn 2 mosquitos in each following wave after 20 mosquitos were spawned
-        for(int i = 0; i < 1 + numOfSpawnedMosquito/20; ++i){
+    //Player need to elminate 35 mosquitos in order to proceed to the mini boss fight
+    if(numOfSpawnedMosquito < 35){
 
             spawnMosquito();
             ++numOfSpawnedMosquito;
 
+        if(numOfSpawnedMosquito%7 == 0){
+
+            spawnBeetle(); //Spawn 1 beetle every 7 mosquitos is spawned
+            ++numOfSpawnedBeetle;
+
         }
 
-        if(numOfSpawnedMosquito%7 == 0)
-            spawnBeetle();
+    }else if(numOfDestroyedMosquito == numOfSpawnedMosquito && numOfDestroyedBeetle == numOfSpawnedBeetle && !miniBossFight){
 
-    }else if(numOfDestroyedMosquito == numOfSpawnedMosquito){
-
+                //Start mini boss(Horror disk) fight after first wave of enemy are eliminated
                 QTimer::singleShot(2000, this, SLOT(spawnHorrorDisk()));
-                numOfDestroyedMosquito = 0; //Clear the record as all mosquitos are eliminated
+                miniBossFight = true;
 
             }
 
-    uniform_int_distribution<std::mt19937::result_type> dist(1, 6); //Distribution in the range [1, 5]
-    unsigned int randNum = dist(rng); //Generate a random number in the range [1, 5]
+    uniform_int_distribution<std::mt19937::result_type> dist(1, 6); //Distribution in the range [1, 6]
+    unsigned int randNum = dist(rng); //Generate a random number in the range [1, 6]
 
     if(randNum == 1) //16.667% chance to spawn a satellite in each wave
         spawnSatellite();
@@ -213,6 +216,9 @@ void Game::drawEquipment(double x, double y, double dropRate){
 
     if(dropRate == 0.05) //Mosquito is defeated
         ++numOfDestroyedMosquito;
+
+    if(dropRate == 0.5) //Beetle is defeated
+        ++numOfDestroyedBeetle;
 
     if(dropRate == 20){ //Horro disk is defeated
 
@@ -482,11 +488,10 @@ void Game::screenEventHandler()
 
         return;
     }
-
 }
 
 
-//Stopping the game and allowing player to restart
+//Stop the game and allows player to restart
 void Game::gameIsOver(Result result){
 
     pause();

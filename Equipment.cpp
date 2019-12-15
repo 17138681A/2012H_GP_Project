@@ -5,7 +5,7 @@
 Equipment::Equipment(EquipmentName equipment, double x, double y, QTimer* timer, QObject* parent)
 {
 
-    name = equipment;
+    name = equipment; //Use to indicate
     refreshTimer = timer;
     randDirOfX = -1 + 2*(rand()%2);
     randDirOfY = -1 + 2*(rand()%2);

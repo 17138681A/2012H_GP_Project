@@ -22,7 +22,7 @@ HorrorDisk::HorrorDisk(QTimer* timer, QObject* parent):Enemy(timer, parent){
     setPixmap(pix);
 
     setStep(1); //Set movement speed
-    setPos(640-pixmap().width()/2, 0);
+    setPos(640-pixmap().width()/2, 0-pixmap().height());
     setScale(1.5);
     setTransformOriginPoint(pixmap().width()/2, pixmap().height()/2); //Set rotation point to center
 

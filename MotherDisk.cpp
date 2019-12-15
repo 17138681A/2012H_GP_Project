@@ -179,7 +179,7 @@ void MotherDisk::move(){
         rage = true;
 
         phaseDelay = 1500; //Shorter delay between attack phase when getting rage
-        phase1MaxAngle *= 2; //Range of Phase1 attack become larger when getting rage
+        phase1MaxAngle *= 1.5; //Range of Phase1 attack become larger when getting rage
 
         pix = QPixmap(":/image/ufoRed.png");
         setPixmap(pix);
