@@ -2,11 +2,11 @@
 #include "QThread"
 
 
-HorrorDisk::HorrorDisk(QTimer* timer, QObject* parent):Enemy(timer, parent){
+HorrorDisk::HorrorDisk(QTimer* timer):Enemy(timer){
 
 
-    randDirOfX = -1 + 2*(rand()%2); //Randomize initial horizontal direction of movement after entering the game
-    randDirOfY = -1 + 2*(rand()%2); //Randomize initial vertical direction of movement after entering the game
+    randDirOfX = -1 + 2*(rand()%2); //Randomize initial horizontal direction of movement after finishing the arrival
+    randDirOfY = -1 + 2*(rand()%2); //Randomize initial vertical direction of movement after finishing the arrival
 
     health = 2400; //Set health
     dropRate = 20; //100% chance to spawn an ultra spray pack
@@ -98,6 +98,7 @@ void HorrorDisk::move(){
         if(x() >= 1280 - pixmap().width()*scale())
             randDirOfX = -1;
 
+        //Always moving with 45 degree inclination
         setPos(x()+step*randDirOfX, y()+step*randDirOfY);
 
     }

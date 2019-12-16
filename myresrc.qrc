@@ -1,19 +1,14 @@
 <RCC>
     <qresource prefix="/">
-        <file>image/bullet.png</file>
-        <file>image/code0.png</file>
         <file>image/darkPurple.png</file>
         <file>image/enemyBlack1.png</file>
-        <file>image/energy_ball.jpg</file>
-        <file>image/energy_ball.png</file>
-        <file>image/flakker.png</file>
-        <file>image/frenzy.png</file>
+        <file>image/frenzyPack.png</file>
         <file>image/frenzyx0.png</file>
         <file>image/frenzyx1.png</file>
         <file>image/frenzyx2.png</file>
         <file>image/frenzyx3.png</file>
         <file>image/guide.png</file>
-        <file>image/healthpack.png</file>
+        <file>image/healthPack.png</file>
         <file>image/hp01.png</file>
         <file>image/hp02.png</file>
         <file>image/hp03.png</file>
@@ -21,7 +16,6 @@
         <file>image/hp05.png</file>
         <file>image/hp06.png</file>
         <file>image/hp07.png</file>
-        <file>image/jewel.jpg</file>
         <file>image/laserBlue05.png</file>
         <file>image/laserRed03.png</file>
         <file>image/meteorBrown_big1.png</file>
@@ -29,14 +23,15 @@
         <file>image/meteorBrown_big3.png</file>
         <file>image/meteorBrown_big4.png</file>
         <file>image/playerShip1_red.png</file>
-        <file>image/ultra_flakker.png</file>
+        <file>image/ultraSprayPack.png</file>
         <file>image/ufoBlue.png</file>
-        <file>image/spaceStation_022.png</file>
+        <file>image/Satellite.png</file>
         <file>image/ufoRed.png</file>
         <file>image/ufoYellow.png</file>
-        <file>image/star_gold.png</file>
+        <file>image/frenzyStar.png</file>
         <file>image/defeat.png</file>
         <file>image/victory.png</file>
         <file>image/enemyBlue4.png</file>
+        <file>image/sprayPack.png</file>
     </qresource>
 </RCC>

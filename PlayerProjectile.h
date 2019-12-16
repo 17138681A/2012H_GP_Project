@@ -1,8 +1,5 @@
-///Day 2
 #ifndef PLAYERPROJECTILE_H
 #define PLAYERPROJECTILE_H
-
-
 #include "MovableObj.h"
 #include "QTimer"
 #include "QtMath"
@@ -14,7 +11,7 @@ class PlayerProjectile: public Movable, public QGraphicsPixmapItem {
 
 public:
 
-    explicit PlayerProjectile( double degree, double x, double y, QTimer* timer, QObject* parent);
+    explicit PlayerProjectile( double degree, double x, double y, QTimer* timer);
 
     double getProjectileSpeed() const;
 
@@ -22,9 +19,11 @@ public:
 protected:
 
     int damage;
+
     double projectileDegree;
 
     QPixmap pix;
+
 
 public slots:
 

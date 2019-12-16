@@ -8,9 +8,10 @@ class MotherDisk: public Enemy{
 
 public:
 
-    MotherDisk(QTimer* timer, QObject* parent);
+    MotherDisk(QTimer* timer);
 
     void deductHealth(int hp) override;
+
 
 public slots:
 
@@ -19,7 +20,6 @@ public slots:
     void startNewPhase(); //Start new attack phase
 
     void move() override;
-
 
 
 private:
@@ -57,6 +57,7 @@ private:
     QTimer* fireRateTimer; //To detemine the fire rate in each attack phase
 
     void stopPhase(); //Stop current attack phase and prepare for the next attack phase
+
 };
 
 #endif // MOTHERDISK_H

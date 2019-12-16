@@ -1,6 +1,6 @@
 #include "Meteor.h"
 
-Meteor::Meteor(QTimer* timer, QObject* parent):Enemy(timer, parent){
+Meteor::Meteor(QTimer* timer):Enemy(timer){
 
     randShape = rand()%4;
     randHor = 50 + rand()%900;
@@ -27,8 +27,6 @@ Meteor::Meteor(QTimer* timer, QObject* parent):Enemy(timer, parent){
     setPos(randHor, 0-pixmap().height());
     setScale(1);
     setTransformOriginPoint(pixmap().width()/2, pixmap().height()/2); //Set rotation point to center
-
-
 
 }
 

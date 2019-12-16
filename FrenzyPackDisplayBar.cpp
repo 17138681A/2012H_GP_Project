@@ -1,19 +1,17 @@
 #include "FrenzyPackDisplayBar.h"
-#include "iostream"
-using namespace std;
 
-FrenzyPackDisplayBar::FrenzyPackDisplayBar(QObject* parent){
 
+FrenzyPackDisplayBar::FrenzyPackDisplayBar(){
 
     pix = QPixmap(":/image/frenzyx0.png");
     setPixmap(pix);
     setScale(0.15);
     setPos(40, 850);
 
-    //cout << "setting diplay bar" << endl;
-
 }
 
+
+//Update the image of the display bar that showing the remaining frenzy packs
 void FrenzyPackDisplayBar::setNumOfFrenzy(int num)
 {
     if(num == 0)

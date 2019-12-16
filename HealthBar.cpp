@@ -1,9 +1,8 @@
-// Day 5
 #include "HealthBar.h"
 #include "iostream"
 using namespace std;
 
-HealthBar::HealthBar(QObject* parent){
+HealthBar::HealthBar(){
 
 
     pix = QPixmap(":/image/hp07.png");

@@ -1,63 +1,62 @@
-//Day 4
 #include "Equiment.h"
 #include "Jet.h"
 
-Equipment::Equipment(EquipmentName equipment, double x, double y, QTimer* timer, QObject* parent)
+Equipment::Equipment(EquipmentName equipment, double x, double y, QTimer* timer):Movable(timer)
 {
 
-    name = equipment; //Use to indicate
-    refreshTimer = timer;
-    randDirOfX = -1 + 2*(rand()%2);
-    randDirOfY = -1 + 2*(rand()%2);
+    name = equipment; //To indicate the current equipment
 
+    randDirOfX = -1 + 2*(rand()%2); //Randomize initial horizontal direction of movement for each equipment
+    randDirOfY = -1 + 2*(rand()%2); //Randomize initial vertical direction of movement for each equipment
+
+    //Set proper image for the current equipment
     if(name == SPRAY_PACK)
-        pix = QPixmap(":/image/flakker.png");
+        pix = QPixmap(":/image/sprayPack.png");
 
     else if(name == ULTRA_SPRAY_PACK)
-        pix = QPixmap(":/image/ultra_flakker.png");
+        pix = QPixmap(":/image/ultraSprayPack.png");
 
     else if(name == HEALTH_PACK)
-        pix = QPixmap(":/image/healthpack.png");
+        pix = QPixmap(":/image/healthPack.png");
 
     else if(name == FRENZY_PACK)
-        pix = QPixmap(":/image/frenzy.png");
+        pix = QPixmap(":/image/frenzyPack.png");
 
     else if(name == FRENZY_STAR)
-        pix = QPixmap(":/image/star_gold.png");
-
+        pix = QPixmap(":/image/frenzyStar.png");
 
     setPixmap(pix);
-    setStep(1);
+    setStep(1); //Set movement speed
     setPos(x,y);
 
-    if(name == FRENZY_STAR)
+    if(name == FRENZY_STAR) //Set larger scale for smaller original image source
         setScale(2);
     else
         setScale(0.1);
-
-
-    connect(refreshTimer, SIGNAL(timeout()), this, SLOT(move()));
 
 }
 
 void Equipment::move()
 {
+
+    //Apply current equipment's effect on jet if this equipment is collected by the player
     QList<QGraphicsItem *> colliding_items = collidingItems();
 
     for (int i = 0, n = colliding_items.size(); i < n; ++i){
 
-        Jet* jet = dynamic_cast<Jet*>(colliding_items[i]);
+        Jet* jet = dynamic_cast<Jet*>(colliding_items[i]); //Check if the colliding object is jet
 
               if(jet != nullptr){
 
-                emit equipped(name);
-                delete this;
+                emit equipped(name); //Informing the game to apply effect on jet
+                delete this; //Delete this equipment after colliding with jet
                 return;
 
             }
-        }//Day 5
+        }
 
 
+    //Bounce back upon reaching the border of the window
     if(y() <= 0)
         randDirOfY = 1;
 
@@ -70,6 +69,7 @@ void Equipment::move()
     if(x() >= 1280 - pixmap().width()*scale())
         randDirOfX = -1;
 
+    //Always moving with 45 degree inclination
     setPos(x()+step*randDirOfX, y()+step*randDirOfY);
 
 

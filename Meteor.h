@@ -8,11 +8,13 @@ class Meteor: public Enemy{
 
 public:
 
-    Meteor(QTimer* timer, QObject* parent);
+    Meteor(QTimer* timer);
+
 
 public slots:
 
     void move() override;
+
 
 private:
 

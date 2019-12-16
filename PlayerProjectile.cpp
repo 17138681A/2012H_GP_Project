@@ -5,7 +5,7 @@
 
 
 
-PlayerProjectile::PlayerProjectile( double degree, double x, double y, QTimer* timer, QObject *parent)
+PlayerProjectile::PlayerProjectile( double degree, double x, double y, QTimer* timer):Movable(timer)
 {
 
 
@@ -19,15 +19,13 @@ PlayerProjectile::PlayerProjectile( double degree, double x, double y, QTimer* t
     setPos(x-pixmap().width()/2,y);
     setScale(1);
 
-    refreshTimer = timer;
-    connect(refreshTimer,SIGNAL(timeout()), this, SLOT(move())); //Update object's status and position
 
 }
 
 void PlayerProjectile::move(){
 
 
-    //Deduct the enemy health if the player's projectile is colliding with the enemy
+    //Deduct the health of the enemy if the player's projectile is colliding with the enemy
     QList<QGraphicsItem *> colliding_items = collidingItems();
 
     for (int i = 0, n = colliding_items.size(); i < n; ++i){
@@ -38,7 +36,7 @@ void PlayerProjectile::move(){
 
                 enemy->deductHealth(damage); //Deal damage to enemy
 
-                delete this; //Delete this projectile when colliding with enemy
+                delete this; //Delete this projectile after colliding with enemy
 
                 return;
             }
@@ -46,7 +44,7 @@ void PlayerProjectile::move(){
 
     setRotation(projectileDegree); //Rotate the image of projectile
 
-    //The projectile speed will stay the same when shooting from different angle
+    //The projectile speed will remain the same when shooting from different angle
     setY(y()-step*qCos(qDegreesToRadians(projectileDegree)));
     setX(x()+step*qSin(qDegreesToRadians(projectileDegree)));
 

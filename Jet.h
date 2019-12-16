@@ -1,15 +1,9 @@
-//Day 1
 #ifndef JET_H
 #define JET_H
-
-
-
 #include "QObject"
 #include "MovableObj.h"
 #include "QTimer"
 
-
-#include "iostream"
 using namespace std;
 
 
@@ -19,8 +13,7 @@ Q_OBJECT
 
 public:
 
-
-    explicit Jet(double x, double y, QTimer* timer, QObject *parent);
+    explicit Jet(double x, double y, QTimer* timer);
 
     void arrived(); //Jet is ready for combat
     void deductHealth(int hp); //Deduct certain health point
@@ -34,20 +27,16 @@ private:
     const int maxHealth = 300; //Maximum health
 
     int health; //Current health
+
     bool isArriving; //Entering the game
 
     QPixmap pix;
+
 
 public slots:
 
     void move() override;
 
-#endif // JET_H
-
-
-
-
-
-
-
 };
+
+#endif // JET_H

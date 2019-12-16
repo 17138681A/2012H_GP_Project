@@ -1,6 +1,6 @@
 #include "Guide.h"
 
-Guide::Guide(double x, double y, QObject* parent){
+Guide::Guide(double x, double y){
 
 
     pix = QPixmap(":/image/guide.png");

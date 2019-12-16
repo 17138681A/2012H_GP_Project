@@ -2,11 +2,10 @@
 #include "QList"
 #include "Enemy.h"
 
-using namespace std;
 
 
 
-Jet::Jet(double x, double y, QTimer* timer, QObject* parent){
+Jet::Jet(double x, double y, QTimer* timer):Movable(timer){
 
 
     health = maxHealth; //Set full health
@@ -19,9 +18,6 @@ Jet::Jet(double x, double y, QTimer* timer, QObject* parent){
     setPos(x,y);
     setScale(1);
     setZValue(1); //To prevent blocking by the health bar and display bar
-
-    refreshTimer = timer;
-    connect(refreshTimer,SIGNAL(timeout()), this, SLOT(move())); //Update object's status and position
 
 }
 

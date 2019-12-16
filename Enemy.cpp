@@ -1,16 +1,13 @@
 #include "Enemy.h"
-#include "Jet.h"
 
-Enemy::Enemy(QTimer* timer, QObject* parent){
+Enemy::Enemy(QTimer* timer):Movable(timer){
 
-
-    refreshTimer = timer;
-    connect(refreshTimer, SIGNAL(timeout()), this, SLOT(move()));
-    setZValue(1);
-
+    setZValue(1); //To prevent blocking by the health bar and display bar
 
 }
 
+
+//Get current health point
 int Enemy::getHealth(){
 
     return health;
@@ -18,12 +15,15 @@ int Enemy::getHealth(){
 }
 
 
+//Deduct certain health point
 void Enemy::deductHealth(int hp){
 
     health -= hp;
     if(health <= 0){
-        emit spawnEquipmentSignal(x(), y(), dropRate);
+
+        emit spawnEquipmentSignal(x(), y(), dropRate); //Spawn equipment after getting destroyed
         delete this;
+
     }
 
 }

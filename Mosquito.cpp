@@ -1,13 +1,13 @@
 #include "Mosquito.h"
 
-Mosquito::Mosquito(QTimer* timer, QObject* parent):Enemy(timer, parent){
+Mosquito::Mosquito(QTimer* timer):Enemy(timer){
 
 
     health = 60;     //Set health
     dropRate = 0.05; //5% item droprate
 
     randHor = 100 + rand()%1080; //Spawn randomly whitin the horizontal range of [100, 1080)
-    randVer = 50 + rand()%300;   //To indicate how far it would go after spawning
+    randVer = 50 + rand()%300;   //To indicate how far it would go after entering the game
 
     pix = QPixmap(":/image/enemyBlack1.png"); //Set object's image
     setPixmap(pix);

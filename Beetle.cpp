@@ -1,20 +1,20 @@
 ﻿#include "Beetle.h"
 
-Beetle::Beetle(QTimer* timer, QObject* parent):Enemy(timer, parent){
+Beetle::Beetle(QTimer* timer):Enemy(timer){
 
 
-    randHor = 100 + rand()%1080;
-    randVer = 50 + rand()%300;
+    randHor = 100 + rand()%1080; //Spawn randomly whitin the horizontal range of [100, 1080)
+    randVer = 50 + rand()%300; //To indicate how far it would go after entering the game
 
-    health = 240;
+    health = 300; //Set health
     dropRate = 0.5; //50% chance to spawn an equipment after getting destroyed
 
     isArriving = true;
 
     pix = QPixmap(":/image/enemyBlue4.png");
-
     setPixmap(pix);
-    setStep(1.5);
+
+    setStep(1.5); //Set movement speed
     setPos(randHor, 0);
     setScale(1);
 
@@ -24,11 +24,14 @@ Beetle::Beetle(QTimer* timer, QObject* parent):Enemy(timer, parent){
 void Beetle::emitSpawnEnemyProjectileSignal()
 {
 
+    //Fan out 3 projectiles infront of it
     for(int i = 30; i >= -30; i -= 30)
         emit spawnEnemyProjectileSignal(i, x()+pixmap().width()/2, y()+pixmap().height());
 
 }
 
+
+//Start moving in either left or right direction
 void Beetle::startHovering(){
 
 
@@ -37,13 +40,17 @@ void Beetle::startHovering(){
 
 }
 
+
+//Stop moving, fire projectiles and prepare for the next horvering
 void Beetle::stopHovering(){
 
-    emitSpawnEnemyProjectileSignal();
-    randDir = -1 + 2*(rand()%2);
-
     disconnect(refreshTimer, SIGNAL(timeout()), this, SLOT(move()));
-    QTimer::singleShot(1000, this, SLOT(startHovering()));
+
+    emitSpawnEnemyProjectileSignal();
+
+    randDir = -1 + 2*(rand()%2); //Decide the direction of next hovering
+
+    QTimer::singleShot(1000, this, SLOT(startHovering())); //Start hovering again after staying 1 second
 }
 
 
@@ -54,19 +61,19 @@ void Beetle::move(){
 
         if(y()>=randVer){
 
-            stopHovering();
+            stopHovering(); //Prepare for hovering after reaching a certain position
 
             isArriving = false;
 
-        }else setY(y()+step);
+        }else setY(y()+step); //Moving forward until reaching a certain position
 
     }
 
-
     if(!isArriving){
 
-        setX(x()+step*randDir);
+        setX(x()+step*randDir); //Moving either left or right during the hovering
 
+        //Hovering in restricted area
         if(x() >= 1080 - pixmap().width()*scale())
             randDir = -1;
 

@@ -1,0 +1,1 @@
+Please directly compile and run in the Qt Creater. No external library is needed.

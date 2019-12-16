@@ -8,24 +8,25 @@ class Beetle: public Enemy{
 
 public:
 
-    Beetle(QTimer* timer, QObject* parent);
+    Beetle(QTimer* timer);
+
 
 public slots:
 
-    void emitSpawnEnemyProjectileSignal();
+    void emitSpawnEnemyProjectileSignal(); //This enemy can shoot projectile
+    void startHovering(); //Start moving in either left or right direction
+    void stopHovering(); //Stop moving, fire projectiles and prepare for the next horvering
+
     void move() override;
-    void startHovering();
-    void stopHovering();
+
 
 private:
-    int randVer;
-    int randHor;
-    int randDir;
-    bool isArriving;
 
-    QTimer* hoverTimer;
+    int randVer; //To indicate how far it would go after entering the game
+    int randHor; //Spawn randomly whitin the horizontal range of [100, 1080)
+    int randDir; //Random horizontal direction of movement during hovering
 
-
+    bool isArriving; //Entering the game
 
 };
 

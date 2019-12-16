@@ -5,7 +5,9 @@
 class ResultBoard: public QGraphicsPixmapItem{
 
 public:
-    ResultBoard(Result result, double x, double y, QObject* parent);
+
+    ResultBoard(Result result, double x, double y);
+
 
 private:
 

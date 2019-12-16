@@ -3,7 +3,7 @@
 
 
 
-Game::Game(QObject* parent)
+Game::Game()
 {
     setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
     setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
@@ -18,16 +18,18 @@ Game::Game(QObject* parent)
     enemySpawningTimer = new QTimer(this);
 
     weapon = DEFAULT_BEAM;
+
     numOfFrenzyPack = 0;
     sprayEffectStack = 0;
     numOfDestroyedMosquito = 0;
     numOfSpawnedMosquito = 0;
     numOfSpawnedBeetle = 0;
     numOfDestroyedBeetle = 0;
+
     goingUp = false;
     goingDown = false;
     goingLeft = false;
-    goingRight = false;
+    goingRight = false;    
     firing = false;
     frenzyMode = false;
     gameOver = false;
@@ -45,16 +47,16 @@ Game::Game(QObject* parent)
 
 }
 
-//Create the opening scene of the game
+//Launch the opening scene of the game
 void Game::createOpening(){
 
     //Jet is entering the game and moving forward
-    jet = new Jet(0, 0, refreshTimer, this);
+    jet = new Jet(0, 0, refreshTimer);
     jet->setPos(640-jet->pixmap().width()*jet->scale()/2,960);
     scene->addItem(jet);
 
     //An image showing the control keys
-    guide = new Guide(640, 300, this);
+    guide = new Guide(640, 300);
     scene->addItem(guide);
 
     refreshTimer->start(10); //Refresh the scene 100 times every 1 second
@@ -94,35 +96,36 @@ void Game::setCombatEnvironment()
     delete guide; //Remove guide at the opening
 
     //Set up display bar of possessing frenzy pack
-    frenzyPackDisplayBar = new FrenzyPackDisplayBar(this);
+    frenzyPackDisplayBar = new FrenzyPackDisplayBar();
     scene->addItem(frenzyPackDisplayBar);
 
     //Set up health bar
-    healthBar = new HealthBar(this);
+    healthBar = new HealthBar();
     scene->addItem(healthBar);
 
     setFocus(); //Start handling keyboard input from player
 
 }
 
+//Spawn enemy wave with specified time interval
 void Game::spawnEnemyWave(){
 
-    //Player need to elminate 35 mosquitos in order to proceed to the mini boss fight
-    if(numOfSpawnedMosquito < 35){
+    //Player need to elminate 40 Mosquito and 8 Beetle before proceeding to the mini boss fight
+    if(numOfSpawnedMosquito < 40){
 
             spawnMosquito();
             ++numOfSpawnedMosquito;
 
-        if(numOfSpawnedMosquito%7 == 0){
+        if(numOfSpawnedMosquito%5 == 0){
 
-            spawnBeetle(); //Spawn 1 beetle every 7 mosquitos is spawned
+            spawnBeetle(); //Spawn 1 Beetle for every 5 Mosquito spawned
             ++numOfSpawnedBeetle;
 
         }
 
     }else if(numOfDestroyedMosquito == numOfSpawnedMosquito && numOfDestroyedBeetle == numOfSpawnedBeetle && !miniBossFight){
 
-                //Start mini boss(Horror disk) fight after first wave of enemy are eliminated
+                //Start mini boss(Horror Disk) fight after all Mosquito and Beetle are eliminated
                 QTimer::singleShot(2000, this, SLOT(spawnHorrorDisk()));
                 miniBossFight = true;
 
@@ -143,7 +146,7 @@ void Game::spawnEnemyWave(){
 
 void Game::spawnMeteor(){
 
-    enemy = new Meteor(refreshTimer, this);
+    enemy = new Meteor(refreshTimer);
     connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(drawEquipment(double, double, double)));
     scene->addItem(enemy);
 
@@ -152,7 +155,7 @@ void Game::spawnMeteor(){
 
 void Game::spawnSatellite(){
 
-    enemy = new Satellite(refreshTimer, this);
+    enemy = new Satellite(refreshTimer);
     connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(drawEquipment(double, double, double)));
     scene->addItem(enemy);
 
@@ -161,7 +164,7 @@ void Game::spawnSatellite(){
 
 void Game::spawnMosquito(){
 
-    enemy = new Mosquito(refreshTimer, this);
+    enemy = new Mosquito(refreshTimer);
     connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(drawEquipment(double, double, double)));
     connect(enemy, SIGNAL(spawnEnemyProjectileSignal(double, double, double)), this, SLOT(spawnEnemyPeojectile(double, double, double)));
     scene->addItem(enemy);
@@ -171,7 +174,7 @@ void Game::spawnMosquito(){
 
 void Game::spawnBeetle(){
 
-    enemy = new Beetle(refreshTimer, this);
+    enemy = new Beetle(refreshTimer);
     connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(drawEquipment(double, double, double)));
     connect(enemy, SIGNAL(spawnEnemyProjectileSignal(double, double, double)), this, SLOT(spawnEnemyPeojectile(double, double, double)));
     scene->addItem(enemy);
@@ -181,7 +184,7 @@ void Game::spawnBeetle(){
 
 void Game::spawnHorrorDisk(){
 
-    enemy = new HorrorDisk(refreshTimer, this);
+    enemy = new HorrorDisk(refreshTimer);
     connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(drawEquipment(double, double, double)));
     connect(enemy, SIGNAL(spawnEnemyProjectileSignal(double, double, double)), this, SLOT(spawnEnemyPeojectile(double, double, double)));
     scene->addItem(enemy);
@@ -191,7 +194,7 @@ void Game::spawnHorrorDisk(){
 
 void Game::spawnMotherDisk(){
 
-    enemy = new MotherDisk(refreshTimer, this);
+    enemy = new MotherDisk(refreshTimer);
     connect(enemy, SIGNAL(spawnEquipmentSignal(double, double, double)), this, SLOT(drawEquipment(double, double, double)));
     connect(enemy, SIGNAL(spawnEnemyProjectileSignal(double, double, double)), this, SLOT(spawnEnemyPeojectile(double, double, double)));
     scene->addItem(enemy);
@@ -202,13 +205,13 @@ void Game::spawnMotherDisk(){
 void Game::spawnEnemyPeojectile(double degree, double x, double y)
 {
 
-    enemyProjectile = new EnemyProjectile(degree, x, y, refreshTimer, this);
+    enemyProjectile = new EnemyProjectile(degree, x, y, refreshTimer);
     scene->addItem(enemyProjectile);
 
 }
 
 
-//Randomly draw 1 among 5 equipments
+//Randomly draw 1 among 4 common equipments(frenzy star is excluded)
 void Game::drawEquipment(double x, double y, double dropRate){
 
     if(dropRate == 0) //Don't spawn equipment if the drop rate is zero
@@ -269,13 +272,13 @@ void Game::drawEquipment(double x, double y, double dropRate){
 //Spawn equipment at the position where the enemy unit is detroyed
 void Game::spawnEquipment(EquipmentName name, double x, double y){
 
-    equipment = new Equipment(name, x, y, refreshTimer, this);
+    equipment = new Equipment(name, x, y, refreshTimer);
     scene->addItem(equipment);
     connect(equipment, SIGNAL(equipped(EquipmentName)), this, SLOT(applyEquipmentEffect(EquipmentName)));
 
 }
 
-//Apply corresponding equipment effect to the jet
+//Apply equipment effect to the jet
 void Game::applyEquipmentEffect(EquipmentName name){
 
     //Use stack to control the spray effect so that the expiration of 1 effect won't affect the later one
@@ -306,7 +309,7 @@ void Game::applyEquipmentEffect(EquipmentName name){
 //Handle key input
 void Game::keyPressEvent(QKeyEvent *event)
 {
-    //Restart the game when player pressing R only if the game is over
+    //Restart the game when the player pressing R after the game is over
     if(event->key() == Qt::Key_R && gameOver){
 
         emit restartSignal();
@@ -412,7 +415,7 @@ void Game::fireUltraSprayBeam(){
 //Spawn player projectile at the current position of jet
 void Game::spawnPlayerProjectile(double degree){
 
-    projectile = new PlayerProjectile(degree, jet->x()+(jet->pixmap().width())/2, jet->y(), refreshTimer, this);
+    projectile = new PlayerProjectile(degree, jet->x()+(jet->pixmap().width())/2, jet->y(), refreshTimer);
     scene->addItem(projectile);
 
 }
@@ -497,7 +500,7 @@ void Game::gameIsOver(Result result){
     pause();
     gameOver = true; //Player can press "R" to restart the game after game is over
 
-    resultBoard = new ResultBoard(result, 640, 300, this);
+    resultBoard = new ResultBoard(result, 640, 300);
     scene->addItem(resultBoard);
 
 }

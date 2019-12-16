@@ -1,6 +1,6 @@
 #include "Satellite.h"
 
-Satellite::Satellite(QTimer* timer, QObject* parent):Enemy(timer, parent){
+Satellite::Satellite(QTimer* timer):Enemy(timer){
 
     randVer = 50 + rand()%300; //Spawn randomly whitin the vertical range of [50, 300)
     randDir = -1 + 2*(rand()%2); //Satellite can either spawn from left or right
@@ -9,7 +9,7 @@ Satellite::Satellite(QTimer* timer, QObject* parent):Enemy(timer, parent){
 
     rotationDegree = 0; //To rotate the iamge of this object
 
-    pix = QPixmap(":/image/spaceStation_022.png");
+    pix = QPixmap(":/image/Satellite.png");
 
 
     if(randDir == -1)

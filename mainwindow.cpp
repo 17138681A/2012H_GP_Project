@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     establishGame();
-    setWindowTitle("Sky Buster"); //Title of the game
+    setWindowTitle("Space Buster"); //Title of the game
     setFixedSize(1280, 960); //Fixed window size
 
 
@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
 //Attach Game object to the main window
 void MainWindow::establishGame(){
 
-    game = new Game(this);
+    game = new Game();
     setCentralWidget(game);
     game->setBackgroundBrush(QImage(":/image/darkPurple.png"));
     connect(game, SIGNAL(restartSignal()), this, SLOT(restart()));

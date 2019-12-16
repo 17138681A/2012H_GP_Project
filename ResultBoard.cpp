@@ -1,6 +1,6 @@
 #include "ResultBoard.h"
 
-ResultBoard::ResultBoard(Result result, double x, double y, QObject* parent){
+ResultBoard::ResultBoard(Result result, double x, double y){
 
 
     if(result == VICTORY) //Final boss is defeated

@@ -13,13 +13,11 @@ enum EquipmentName{
 
     SPRAY_PACK,
     ULTRA_SPRAY_PACK,
-    SPEEDBOOST_PACK,
     FRENZY_PACK,
     HEALTH_PACK,
     FRENZY_STAR
 
-
-};//Day 5
+};
 
 enum Result{
 

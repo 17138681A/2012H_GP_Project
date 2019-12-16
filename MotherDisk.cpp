@@ -1,6 +1,6 @@
 #include "MotherDisk.h"
 
-MotherDisk::MotherDisk(QTimer* timer, QObject* parent):Enemy(timer, parent){
+MotherDisk::MotherDisk(QTimer* timer):Enemy(timer){
 
     health = 5000;      //Set health
     dropRate = 999;     //Drop victory item upon getting destroyed
@@ -115,7 +115,7 @@ void MotherDisk::emitSpawnEnemyProjectileSignal()
         }else if(attackPhase == Phase3){
 
 
-                //Shoot 2 projectile in 2 direction with the difference of 180 degree
+                //Shoot 2 projectiles in the opposite direction simultaneously
                 for(int i = 0; i < 2; ++i)
                     emit spawnEnemyProjectileSignal(phase3Angle+i*180, x()+pixmap().width()/2, y()+pixmap().height()/2);
 
